@@ -59,6 +59,7 @@
           stimulus: jsPsych.timelineVariable('stimulus'),
           choices: ['1', '2'],
           trial_duration: 2000,
+          post_trial_gap: 600, // between trial and cue is 600ms
           data: {
             task: jsPsych.timelineVariable('cue'),
             correct_response: jsPsych.timelineVariable('correct_response')
