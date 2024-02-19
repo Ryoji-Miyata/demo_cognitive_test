@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My experiment</title>
+    <script src="https://unpkg.com/jspsych@7.3.4"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-preload@1.1.3"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-html-keyboard-response@1.1.3"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-image-keyboard-response@1.1.3"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-html-button-response@1.1.3"></script>
+    <script src="./config/variables.js"></script>
+    <link href="https://unpkg.com/jspsych@7.3.4/css/jspsych.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body></body>
+  <script>
+    const jsPsych = initJsPsych({
+      on_finish: function() {
+        jsPsych.data.displayData(); // for debugging
+      }
+    });
+
+    let timeline = [];
+
+    const payload = {
+      type: jsPsychPreload,
+      images: ["./img/big_s_blue.svg", "./img/big_h_blue.svg", "./img/big_s_green.svg", "./img/big_h_green.svg"]
+    };
+    timeline.push(payload);
+
+    const instructions = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: "<p>When the border is <b>BLUE</b>, then look at the large letter. If it is <b>S</b> press 1, <b>H</b> press 2.</p>" +
+                "<p>When the border is <b>GREEN</b>, then look at the small letter. If it is <b>S</b> press 1, <b>H</b> press 2.</p>" +
+                "<p>Press <b>SPACE</b> to begin.</p>",
+      choices: " "
+    };
+    timeline.push(instructions);
+
+    const trials = [
+      { stimulus: "./img/big_s_blue.svg", cue: "LARGE", correct_response: "1" },
+      { stimulus: "./img/big_h_blue.svg", cue: "LARGE", correct_response: "2" },
+      { stimulus: "./img/big_s_green.svg", cue: "SMALL", correct_response: "2" },
+      { stimulus: "./img/big_h_green.svg", cue: "SMALL", correct_response: "1" }
+    ];
+
+    const procedure = {
+      timeline: [
+        {
+          type: jsPsychImageKeyboardResponse,
+          stimulus: jsPsych.timelineVariable('stimulus'),
+          stimulus_height: 200,
+          choices: ['1', '2'],
+          trial_duration: 4000,
+          post_trial_gap: 500,
+          data: {
+            task: jsPsych.timelineVariable('cue'),
+            correct_response: jsPsych.timelineVariable('correct_response')
+          },
+          on_finish: function(data){
+            data.correct = jsPsych.pluginAPI.compareKeys(data.response, data.correct_response);
+          }
+        }
+      ],
+      timeline_variables: trials,
+      randomize_order: true,
+      repetitions: 2
+    };
+    timeline.push(procedure);
+
+    const debrief_block = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: function() {
+        const trials = jsPsych.data.get().filter({task: 'SMALL'});
+        const correct_trials = trials.filter({correct: true});
+        const accuracy = Math.round(correct_trials.count() / trials.count() * 100);
+        const rt = Math.round(correct_trials.select('rt').mean());
+
+        return `<p>You responded correctly on ${accuracy}% of the trials.</p>
+                <p>Your average response time is ${rt}ms.</p>
+          <p>Press any key to complete the experiment. Thank you!</p>`;
+      }
+    };
+    timeline.push(debrief_block);
+
+    jsPsych.run(timeline)
+  </script>
+</html>

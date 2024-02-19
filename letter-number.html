@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My experiment</title>
+    <script src="https://unpkg.com/jspsych@7.3.4"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-preload@1.1.3"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-html-keyboard-response@1.1.3"></script>
+    <script src="./config/variables.js"></script>
+    <link href="https://unpkg.com/jspsych@7.3.4/css/jspsych.css" rel="stylesheet" type="text/css" />
+    <style>
+      .quadrant {
+          position: fixed;
+          width: 50%;
+          height: 50%;
+      }
+      #top-right { top: 0; right: 0; }
+      #top-left { top: 0; left: 0; }
+      #bottom-left { bottom: 0; left: 0; }
+      #bottom-right { bottom: 0; right: 0; }
+      .stimulus {
+          font-size: 24px;
+          text-align: center;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+      }
+  </style>
+  </head>
+  <body></body>
+  <script>
+    const trialAmount = 10;
+
+    const jsPsych = initJsPsych({
+      on_finish: function() {
+        jsPsych.data.displayData(); // for debugging
+      }
+    });
+
+    let timeline = [];
+
+    const instructions = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: "<p>You will see a pair of letter and a number (e.g., G7)." +
+                "<p>When the pair is in the <b>upper</b> area, press 1 if the letter is <b>consonant</b>, and 2 for <b>vowel</b>.</p>" +
+                "<p>When the pair is in the <b>lower</b> area, press 1 if the number is <b>odd</b>, and 2 for <b>even</b>.</p>" +
+                "<p>Press <b>SPACE</b> to begin.</p>",
+      choices: " "
+    };
+    timeline.push(instructions);
+
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const numbers = '123456789';
+    const quadrants = ['top-right', 'top-left', 'bottom-left', 'bottom-right']
+
+    const trials = [];
+    for (let i = 0; i < trialAmount; i++) {
+      const letter = letters[Math.floor(Math.random() * letters.length)]
+      const number = numbers[Math.floor(Math.random() * numbers.length)]
+      const quadrant = quadrants[i % 4];
+
+      const stimulus = letter + number;
+
+      let correct_response = (['A', 'E', 'I', 'O', 'U'].includes(letter)) ? "2" : "1";
+      if (quadrant === 'bottom-left' || quadrant === 'bottom-right') {
+        correct_response = (parseInt(number) % 2 === 0) ? "2" : "1";
+      }
+
+      const trial = {
+        stimulus: stimulus,
+        quadrant: quadrant,
+        correct_response: correct_response
+      };
+
+      trials.push(trial);
+    }
+
+    const trial_procedure = {
+        timeline: [{
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: function(){
+                let html = `<div class="quadrant" id="${jsPsych.timelineVariable('quadrant')}">`;
+                html += "<div class='stimulus'>" + jsPsych.timelineVariable('stimulus') + "</div></div>";
+                return html;
+            },
+            choices: ['1', '2'],
+            data: {
+                task: jsPsych.timelineVariable('quadrant'),
+                correct_response: jsPsych.timelineVariable('correct_response')
+            },
+            on_finish: function(data){
+                data.correct = data.response === data.correct_response;
+            }
+        }],
+        timeline_variables: trials
+    };
+    timeline.push(trial_procedure);
+
+    const debrief_block = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: function() {
+        const trials = jsPsych.data.get().filter({task: 'top-right', task: 'top-left', task: 'bottom-left', task: 'bottom-right'});
+        const correct_trials = trials.filter({correct: true});
+        const accuracy = Math.round(correct_trials.count() / trials.count() * 100);
+        const rt = Math.round(correct_trials.select('rt').mean());
+
+        return `<p>You responded correctly on ${accuracy}% of the trials.</p>
+                <p>Your average response time is ${rt}ms.</p>
+          <p>Press any key to complete the experiment. Thank you!</p>`;
+      }
+    };
+    timeline.push(debrief_block);
+
+    jsPsych.run(timeline);
+  </script>
+</html>

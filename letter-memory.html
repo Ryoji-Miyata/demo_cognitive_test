@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My experiment</title>
+    <script src="https://unpkg.com/jspsych@7.3.4"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-preload@1.1.3"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-html-keyboard-response@1.1.3"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-survey-text@1.1.3"></script>
+    <link href="https://unpkg.com/jspsych@7.3.4/css/jspsych.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body></body>
+  <script>
+    const trial = 5;
+    const askTarget = 3;
+
+    const jsPsych = initJsPsych({
+      on_finish: function() {
+        jsPsych.data.displayData(); // for debugging
+      }
+    });
+
+    let timeline = [];
+
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+    const welcome = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: `
+        <p>Welcome to the experiment. </p>
+        <p>Press <b>SPACE</b> to continue.</p>
+      `,
+      choices: [" "]
+    };
+    timeline.push(welcome);
+
+    const instructions = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: `
+        <p>In this experiment, you will see a series of letters appear one at a time in the center of the screen.</p>
+        <p>Remember the last ${askTarget} letters that you see.</p>
+        <p>After the last letter disappears, you will be asked to type in the letters that you remember.</p>
+        <p>Press <b>SPACE</b> to begin.</p>
+      `,
+      post_trial_gap: 2000,
+      choices: [" "]
+    };
+    timeline.push(instructions);
+
+    for (let i = 0; i < trial; i++) {
+      let letter = []
+      const letterLength = jsPsych.randomization.sampleWithoutReplacement([5, 7, 9, 11], 1)[0];
+      for (let i = 0; i < letterLength; i++) {
+        let newLetter = letters[Math.floor(Math.random() * letters.length)];
+        while (newLetter === letter[letter.length - 1]) {
+          newLetter = letters[Math.floor(Math.random() * letters.length)];
+        }
+        letter.push(newLetter);
+      }
+      for (let i = 0; i < letter.length; i++) {
+        const letter_memory = {
+          type: jsPsychHtmlKeyboardResponse,
+          stimulus: `<p style="font-size: 6rem; font-weight: bold;"><b>${letter[i]}</b></p>`,
+          trial_duration: 1000,
+          choices: "NO_KEYS"
+        };
+        timeline.push(letter_memory);
+      }
+
+      const recall = {
+        type: jsPsychSurveyText,
+        trial_duration: 5000,
+        response_ends_trial: false,
+        questions: [
+          {prompt: "What were the letters", required: true, name: "letters"}
+        ],
+        data: {
+          task: 'LETTER_MEMORY',
+          correct_response: letter.slice(-(askTarget)).join('').replace(/,/g, '').toLowerCase(),
+          letterLength: letterLength
+        },
+        on_finish: function(data) {
+          data.correct = data.response.letters === data.correct_response;
+        }
+      };
+      timeline.push(recall);
+    }
+
+    const debrief_block = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: function() {
+        const trials = jsPsych.data.get().filter({task: 'LETTER_MEMORY'});
+        const correct_trials = trials.filter({correct: true});
+        const accuracy = Math.round(correct_trials.count() / trials.count() * 100);
+        var rt = Math.round(correct_trials.select('rt').mean());
+
+        return `<p>You responded correctly on ${accuracy}% of the trials.</p>
+          <p>Your average response time was ${rt}ms.</p>
+          <p>Press any key to complete the experiment. Thank you!</p>`;
+      }
+    };
+    timeline.push(debrief_block);
+
+    jsPsych.run(timeline)
+  </script>
+</html>

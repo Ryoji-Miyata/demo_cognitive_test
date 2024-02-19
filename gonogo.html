@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My experiment</title>
+    <script src="https://unpkg.com/jspsych@7.3.4"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-html-keyboard-response@1.1.3"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-html-button-response@1.1.3"></script>
+    <script src="./config/variables.js"></script>
+    <link href="https://unpkg.com/jspsych@7.3.4/css/jspsych.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body></body>
+  <script>
+    function generateFixedRatioArray(length, target, target_probability) {
+      let array = [];
+      const totalSpecial = Math.round(length * target_probability);
+      const otherNumbersCount = length - totalSpecial;
+
+      for (let i = 0; i < totalSpecial; i++) {
+          array.push(target);
+      }
+
+      for (let i = 0; i < otherNumbersCount; i++) {
+          let randomNumber;
+          do {
+              randomNumber = Math.floor(Math.random() * 9) + 1;
+          } while (randomNumber === target);
+          array.push(randomNumber);
+      }
+
+      // 配列をシャッフル
+      array = array.sort(() => Math.random() - 0.5);
+
+      return array;
+    }
+    function test_stimuli () {
+      const array = generateFixedRatioArray(trial_length, trial_target, trial_target_probability);
+      const stimuli = [];
+      for (let i = 0; i < array.length; i++) {
+        if (array[i] === 3) {
+          stimuli.push({ stimulus: `<span style="font-size: 6rem; font-weight: bold;">${array[i]}</span>`, correct_response: "" });
+        } else {
+          stimuli.push({ stimulus: `<span style="font-size: 6rem; font-weight: bold;">${array[i]}</span>`, correct_response: " " });
+        }
+      }
+      return stimuli;
+    }
+
+    const jsPsych = initJsPsych({
+      on_finish: function() {
+        jsPsych.data.displayData(); // for debugging
+      }
+    });
+
+    let timeline = [];
+
+    const welcome = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: "<div><p>Welcome to the experiment.</p><p>Press SPACE to begin.</p></div>"
+    };
+    timeline.push(welcome);
+
+    const instructions = {
+      type: jsPsychHtmlButtonResponse,
+      stimulus: 'Go on to the next page.',
+      choices: ['Next'],
+      post_trial_gap: interstimuli_interval
+    };
+    timeline.push(instructions);
+
+    const test = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: jsPsych.timelineVariable('stimulus'),
+      trial_duration: stimulus_duration,
+      post_trial_gap: interstimuli_interval,
+      choices: [" ", ""],
+      data: {
+        task: 'response',
+        correct_response: jsPsych.timelineVariable('correct_response')
+      },
+      on_finish: function(data){
+        if (data.response == null && data.correct_response == "") { // if not the target, no response is correct but returns null in data.response so make it rue as it is correct
+          data.correct = true;
+        } else {
+          data.correct = jsPsych.pluginAPI.compareKeys(data.response, data.correct_response); // if the target, compare the response with the correct response
+        }
+      }
+    }
+    // const test_procedure = {
+    //   timeline: [test],
+    //   timeline_variables: test_stimuli,
+    //   randomize_order: true, // randomize the order of the stimuli
+    //   repetitions: 5 // repeat each stimulus
+    // }
+    const test_procedure = {
+      timeline: [test],
+      timeline_variables: test_stimuli()
+    }
+    timeline.push(test_procedure);
+
+    const debrief_block = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: function() {
+        const trials = jsPsych.data.get().filter({task: 'response'});
+        const correct_trials = trials.filter({correct: true});
+        const accuracy = Math.round(correct_trials.count() / trials.count() * 100);
+        // const rt = Math.round(correct_trials.select('rt').mean());
+
+        return `<p>You responded correctly on ${accuracy}% of the trials.</p>
+          <p>Press any key to complete the experiment. Thank you!</p>`;
+      }
+    };
+    timeline.push(debrief_block);
+
+    jsPsych.run(timeline);
+  </script>
+</html>
