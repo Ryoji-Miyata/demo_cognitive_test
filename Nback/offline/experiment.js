@@ -178,9 +178,7 @@ function expStart(subject, session) {
     trial_duration: 3000,
     on_finish: function(trial) { statCalculation(trial) }
   };
-
-  jsPsych.data.addProperties({subject: subjectId});
-  jsPsych.data.addProperties({session: sessionNumber});
+  
   timeline.push({type: "fullscreen", fullscreen_mode: true}, instructions, startPractice, practice, afterPractice, firstBlock, betweenBlockRest, ready, secondBlock, debriefBlock, {type: "fullscreen", fullscreen_mode: false});
 
   /*************** EXPERIMENT START AND DATA UPDATE ***************/
