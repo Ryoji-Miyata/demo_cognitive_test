@@ -8,6 +8,7 @@
     <script src="./dist/plugin-fullscreen.js"></script>
     <script src="./config/variables.js"></script>
     <script src="./config/en.js"></script> <!-- Use en.js for English instructions, jp.js for Japanese -->
+    <script src="https://unpkg.com/@jspsych-contrib/plugin-pipe"></script>
     <link href="./dist/jspsych.css" rel="stylesheet" type="text/css" />
     <link href="./style/style.css" rel="stylesheet" type="text/css" />
   </head>
@@ -19,6 +20,9 @@
       }
     });
 
+    const subject_id = jsPsych.randomization.randomID(10);
+    const filename = `${subject_id}.csv`;
+    
     let timeline = [];
 
     const enter_fullscreen = {
@@ -118,10 +122,19 @@
         // const rt = Math.round(correct_trials.select('rt').mean());
 
         return feedback(accuracy);
-      }
+     }
+ const save_data = {
+      type: jsPsychPipe,
+      action: "save",
+      experiment_id: "0OEr3EfICc11",
+      filename: filename,
+      data_string: ()=>jsPsych.data.get().csv()
+    };
+      
     };
     timeline.push(debrief_block);
 
     jsPsych.run(timeline);
+    jsPsych.run([hello_trial, save_data]);
   </script>
 </html>
