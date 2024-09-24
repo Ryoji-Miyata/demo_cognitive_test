@@ -8,7 +8,6 @@
     <script src="./dist/plugin-fullscreen.js"></script>
     <script src="./config/variables.js"></script>
     <script src="./config/en.js"></script> <!-- Use en.js for English instructions, jp.js for Japanese -->
-    <script src="https://unpkg.com/@jspsych-contrib/plugin-pipe"></script>
     <link href="./dist/jspsych.css" rel="stylesheet" type="text/css" />
     <link href="./style/style.css" rel="stylesheet" type="text/css" />
   </head>
@@ -20,7 +19,6 @@
       }
     });
 
-    
     let timeline = [];
 
     const enter_fullscreen = {
@@ -120,12 +118,10 @@
         // const rt = Math.round(correct_trials.select('rt').mean());
 
         return feedback(accuracy);
-     }
-      
+      }
     };
     timeline.push(debrief_block);
 
     jsPsych.run(timeline);
-   
   </script>
 </html>
