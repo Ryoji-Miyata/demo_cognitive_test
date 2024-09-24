@@ -20,8 +20,6 @@
       }
     });
 
-    const subject_id = jsPsych.randomization.randomID(10);
-    const filename = `${subject_id}.csv`;
     
     let timeline = [];
 
@@ -123,18 +121,11 @@
 
         return feedback(accuracy);
      }
- const save_data = {
-      type: jsPsychPipe,
-      action: "save",
-      experiment_id: "nTfNs3BeCPOK",
-      filename: filename,
-      data_string: ()=>jsPsych.data.get().csv()
-    };
       
     };
     timeline.push(debrief_block);
 
     jsPsych.run(timeline);
-    jsPsych.run([hello_trial, save_data]);
+   
   </script>
 </html>
