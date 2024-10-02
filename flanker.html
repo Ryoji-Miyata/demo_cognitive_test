@@ -18,9 +18,8 @@
      on_finish: function() {
       // 実験データから反応時間、反応結果、正誤判定を抽出
       const trialData = jsPsych.data.get().filterCustom(function(trial) {
-        
-        return [5, 7, 9, 11, 13, 15, 17, 19, 21, 23].includes(trial.trial_index); // trial_indexが5, 7, 9のデータを取得
-    }).select(['rt', 'response', 'correct', 'trial_index']).values; // 必要なフィールドを取得
+        return typeof trial.rt !== 'undefined' && typeof trial.response !== 'undefined' && typeof trial.correct !== 'undefined';
+      }).select(['rt', 'response', 'correct']).values; // rt, response, correctを配列として取得
   
       // データをCSV形式に変換
       const csvData = convertArrayToCSV(trialData);
@@ -134,10 +133,9 @@
     };
     timeline.push(debrief_block);
 
-   // タイムラインを実行
-jsPsych.run(timeline);
+    jsPsych.run(timeline);
 
-// データをサーバに送信する関数
+    // データをサーバに送信する関数
 function sendDataToServer(csvData) {
   const now = new Date();
   const filename = `experiment_${now.getFullYear()}_${now.getMonth() + 1}_${now.getDate()}_${now.getHours()}_${now.getMinutes()}_${now.getSeconds()}.csv`;
@@ -151,7 +149,7 @@ function sendDataToServer(csvData) {
     body: JSON.stringify({
       experimentID: "nTfNs3BeCPOK",  // jsPsych Pipeの実験ID
       filename: filename,            // ユニークなファイル名
-      data: csvData                  // 特定のtrial_indexのデータをCSV形式で送信
+      data: csvData                  // 実験データをCSV形式で送信
     }),
   })
   .then(response => {
@@ -168,9 +166,9 @@ function sendDataToServer(csvData) {
 
 // 配列をCSV形式に変換する関数
 function convertArrayToCSV(array) {
-  let csv = "trial_index,rt,response,correct\n";  // ヘッダー行
+  let csv = "rt,response,correct\n";  // ヘッダー行
   array.forEach(function(row) {
-    csv += `${row.trial_index},${row.rt},${row.response},${row.correct}\n`;  // 各データをCSV形式に追加
+    csv += `${row.rt},${row.response},${row.correct}\n`;  // 各データをCSV形式に追加
   });
   return csv;
 }
