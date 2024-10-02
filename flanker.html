@@ -15,7 +15,11 @@
   <script>
     const jsPsych = initJsPsych({
       on_finish: function() {
-        jsPsych.data.displayData(); // for debugging
+         // 実験データをCSV形式で取得（correctなどの情報を含む）
+    const csvData = jsPsych.data.get().csv(); // データをCSV形式で取得
+
+    // データをサーバに送信
+    sendDataToServer(csvData);
       }
     });
 
@@ -123,5 +127,34 @@
     timeline.push(debrief_block);
 
     jsPsych.run(timeline);
+
+    // データをサーバに送信する関数
+function sendDataToServer(csvData) {
+  const now = new Date();
+  const filename = `experiment_${now.getFullYear()}_${now.getMonth() + 1}_${now.getDate()}_${now.getHours()}_${now.getMinutes()}_${now.getSeconds()}.csv`;
+
+  fetch("https://pipe.jspsych.org/api/data/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "*/*",
+    },
+    body: JSON.stringify({
+      experimentID: "nTfNs3BeCPOK",  // jsPsych Pipeの実験ID
+      filename: filename,            // ユニークなファイル名
+      data: csvData                  // 実験データをCSV形式で送信
+    }),
+  })
+  .then(response => {
+    if (response.ok) {
+      console.log('データが正常に保存されました');
+    } else {
+      console.error('データの保存中にエラーが発生しました');
+    }
+  })
+  .catch(error => {
+    console.error('通信エラーが発生しました:', error);
+  });
+}
   </script>
 </html>
