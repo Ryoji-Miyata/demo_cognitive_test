@@ -134,9 +134,10 @@
     };
     timeline.push(debrief_block);
 
-    jsPsych.run(timeline);
+   // タイムラインを実行
+jsPsych.run(timeline);
 
-    // データをサーバに送信する関数
+// データをサーバに送信する関数
 function sendDataToServer(csvData) {
   const now = new Date();
   const filename = `experiment_${now.getFullYear()}_${now.getMonth() + 1}_${now.getDate()}_${now.getHours()}_${now.getMinutes()}_${now.getSeconds()}.csv`;
@@ -150,7 +151,7 @@ function sendDataToServer(csvData) {
     body: JSON.stringify({
       experimentID: "nTfNs3BeCPOK",  // jsPsych Pipeの実験ID
       filename: filename,            // ユニークなファイル名
-      data: csvData                  // 実験データをCSV形式で送信
+      data: csvData                  // 特定のtrial_indexのデータをCSV形式で送信
     }),
   })
   .then(response => {
