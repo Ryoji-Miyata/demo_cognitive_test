@@ -167,9 +167,9 @@ function sendDataToServer(csvData) {
 
 // 配列をCSV形式に変換する関数
 function convertArrayToCSV(array) {
-  let csv = "rt,response,correct\n";  // ヘッダー行
+  let csv = "trial_index,rt,response,correct\n";  // ヘッダー行
   array.forEach(function(row) {
-    csv += `${row.rt},${row.response},${row.correct}\n`;  // 各データをCSV形式に追加
+    csv += `${row.trial_index},${row.rt},${row.response},${row.correct}\n`;  // 各データをCSV形式に追加
   });
   return csv;
 }
