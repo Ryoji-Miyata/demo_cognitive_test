@@ -14,21 +14,14 @@
   <body></body>
   <script>
     const jsPsych = initJsPsych({
+      on_finish: function() {
+         // 実験データをCSV形式で取得（correctなどの情報を含む）
+    const csvData = jsPsych.data.get().csv(); // データをCSV形式で取得
 
-     on_finish: function() {
-      // 実験データから反応時間、反応結果、正誤判定を抽出
-      const trialData = jsPsych.data.get().filterCustom(function(trial) {
-        return typeof trial.rt !== 'undefined' && typeof trial.response !== 'undefined' && typeof trial.correct !== 'undefined';
-      }).select(['rt', 'response', 'correct']).values; // rt, response, correctを配列として取得
-  
-      // データをCSV形式に変換
-      const csvData = convertArrayToCSV(trialData);
-  
-      // データをサーバに送信
-      sendDataToServer(csvData);
-    }
-  });
-  
+    // データをサーバに送信
+    sendDataToServer(csvData);
+      }
+    });
 
     let timeline = [];
 
@@ -162,15 +155,6 @@ function sendDataToServer(csvData) {
   .catch(error => {
     console.error('通信エラーが発生しました:', error);
   });
-}
-
-// 配列をCSV形式に変換する関数
-function convertArrayToCSV(array) {
-  let csv = "rt,response,correct\n";  // ヘッダー行
-  array.forEach(function(row) {
-    csv += `${row.rt},${row.response},${row.correct}\n`;  // 各データをCSV形式に追加
-  });
-  return csv;
 }
   </script>
 </html>
