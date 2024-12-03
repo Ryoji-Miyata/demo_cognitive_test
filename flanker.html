@@ -145,7 +145,7 @@ jsPsych.run(timeline);
     timeline.push(debrief_block);
 
 // ID入力タスクを最後に移動
-const id_input = {
+//const id_input = {
   type: jsPsychHtmlButtonResponse,
   stimulus: `
     <h1>実験ID入力</h1>
@@ -184,7 +184,7 @@ const id_input = {
 };
 
 // ID入力の再試行ループを追加
-timeline.push({
+//timeline.push({
   timeline: [id_input],
   loop_function: function (data) {
     const last_trial = data.values()[0];
