@@ -31,20 +31,21 @@
     <h1>実験ID入力</h1>
     <p>実験を始める前に、以下の入力欄に半角数字でIDを入力してください。</p>
     <input type="text" id="participant_id" placeholder="IDを入力" style="font-size: 18px; padding: 5px; width: 50%; margin-bottom: 10px;">
-    <p id="error_message" style="color: red; display: none;">IDは半角数字で入力してください。</p>
   `,
   choices: ["次へ"],
   on_finish: function(data) {
     const id = document.getElementById("participant_id").value.trim();
     const isNumeric = /^[0-9]+$/.test(id); // 半角数字のみ許容
     if (!isNumeric) {
-      document.getElementById("error_message").style.display = "block";
-      jsPsych.endCurrentTimeline(); // タイムラインを終了（再入力を促す）
+      alert("IDは半角数字で入力してください。再入力してください。");
+      jsPsych.pauseExperiment();
+      jsPsych.resumeExperiment();
     } else {
       data.participant_id = id; // IDをデータに保存
     }
   }
 };
+
     const enter_fullscreen = {
       type: jsPsychFullscreen,
       fullscreen_mode: true,
