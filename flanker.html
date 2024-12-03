@@ -140,21 +140,14 @@ jsPsych.run(timeline);
     const trials = jsPsych.data.get().filter({task: 'response'});
     
     // 正解した試行をフィルタリング
-    const correct_trials = trials.filter(function(trial) {
-      return trial.correct === true;  // 'correct'フィールドがtrueのものを選択
-    });
+    const correct_trials = trials.filter({correct: true});
     
     // 正解率の計算
     const accuracy = Math.round((correct_trials.length / trials.length) * 100);  // 正解率（パーセント）
     
     // 反応時間の計算（オプション）
-    const rt_values = correct_trials.map(function(trial) {
-      return trial.rt;  // 正解した試行の反応時間を取得
-    }).filter(rt => !isNaN(rt));  // 無効な反応時間を除外
+    const avg_rt = Math.round(correct_trials.select('rt').mean());  // 平均反応時間
 
-    // 正解試行があれば平均反応時間を計算
-    const avg_rt = rt_values.length > 0 ? Math.round(rt_values.reduce((sum, rt) => sum + rt, 0) / rt_values.length) : 0;
-    
     // フィードバックメッセージを返す
     return `
       <h2>実験終了</h2>
