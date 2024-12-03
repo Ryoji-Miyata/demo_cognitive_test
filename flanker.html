@@ -52,8 +52,7 @@
     };
     timeline.push(enter_fullscreen, welcome, instructions, beginTask);
     
-　　
-const test_stimuli = [];
+　　const test_stimuli = [];
 for (let i = 0; i < 10; i++) {
   test_stimuli.push(generateFlankerStimulus());  // 10問分のフランカー刺激を生成
 }
@@ -70,7 +69,7 @@ function generateFlankerStimulus() {
   }
 
   // 真ん中の記号を基準に正解を決める
-  const correct_response = stimulus[2] === '＞' ? 'f' : 'j';
+  const correct_response = stimulus[2] === '＞' ? 'left' : 'right';
   
   return {
     stimulus: `<span class="text">${stimulus.join('')}</span>`,
@@ -91,16 +90,20 @@ const fixation = {
 };
 
 const test = {
-  type: jsPsychHtmlKeyboardResponse,
+  type: jsPsychHtmlButtonResponse,
   stimulus: jsPsych.timelineVariable('stimulus'),  // ランダムに生成された刺激を表示
-  choices: ['f', 'j'],  // ユーザーが選択するキー
+  choices: ['左', '右'],  // ユーザーが選択するボタン
+  button_html: `
+    <button style="position: absolute; left: 10%; bottom: 10%; font-size: 20px;">左</button>
+    <button style="position: absolute; right: 10%; bottom: 10%; font-size: 20px;">右</button>
+  `,  // 左右のボタンを画面下に配置
   data: {
     task: 'response',
-    correct_response: jsPsych.timelineVariable('correct_response')  // 正解のキーを取得
+    correct_response: jsPsych.timelineVariable('correct_response')  // 正解のボタンを取得
   },
-  on_finish: function(data){
+  on_finish: function(data) {
     // ユーザーの反応が正しいかをチェックし、データに記録
-    data.correct = jsPsych.pluginAPI.compareKeys(data.response, data.correct_response);
+    data.correct = (data.response === data.correct_response);
   }
 };
 
@@ -116,6 +119,7 @@ timeline.push(flanker);
 
 // jsPsych実行
 jsPsych.run(timeline);
+
 
     
     const end = {
@@ -145,7 +149,7 @@ jsPsych.run(timeline);
     timeline.push(debrief_block);
 
 // ID入力タスクを最後に移動
-//const id_input = {
+const id_input = {
   type: jsPsychHtmlButtonResponse,
   stimulus: `
     <h1>実験ID入力</h1>
@@ -183,8 +187,8 @@ jsPsych.run(timeline);
   },
 };
 
-// ID入力の再試行ループを追加
-//timeline.push({
+//ID入力の再試行ループを追加
+timeline.push({
   timeline: [id_input],
   loop_function: function (data) {
     const last_trial = data.values()[0];
