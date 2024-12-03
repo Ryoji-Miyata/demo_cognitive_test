@@ -25,26 +25,37 @@
 
     let timeline = [];
 
-    const id_input = {
+   const id_input = {
   type: jsPsychHtmlButtonResponse,
   stimulus: `
     <h1>実験ID入力</h1>
     <p>実験を始める前に、以下の入力欄に半角数字でIDを入力してください。</p>
     <input type="text" id="participant_id" placeholder="IDを入力" style="font-size: 18px; padding: 5px; width: 50%; margin-bottom: 10px;">
+    <p id="error_message" style="color: red; display: none;">IDは半角数字で入力してください。</p>
   `,
   choices: ["次へ"],
-  on_finish: function(data) {
+  on_finish: function (data) {
     const id = document.getElementById("participant_id").value.trim();
-    const isNumeric = /^[0-9]+$/.test(id); // 半角数字のみ許容
-    if (!isNumeric) {
-      alert("IDは半角数字で入力してください。再入力してください。");
-      jsPsych.pauseExperiment();
-      jsPsych.resumeExperiment();
+    if (/^[0-9]+$/.test(id)) {
+      data.participant_id = id;
     } else {
-      data.participant_id = id; // IDをデータに保存
+      data.participant_id = null; // 無効なIDはnullに設定
     }
-  }
+  },
 };
+
+timeline.push({
+  timeline: [id_input],
+  loop_function: function (data) {
+    const last_trial = data.values()[0];
+    if (last_trial.participant_id === null) {
+      alert("IDは半角数字で入力してください。再入力をお願いします。");
+      return true; // 再ループ
+    }
+    return false; // 次に進む
+  },
+});
+
 
     const enter_fullscreen = {
       type: jsPsychFullscreen,
@@ -71,7 +82,7 @@
       choices: [lang.utils.next],
       post_trial_gap: interstimuli_interval.instructions
     };
-    timeline.push(id_input, enter_fullscreen, welcome, instructions, beginTask);
+    timeline.push(enter_fullscreen, welcome, instructions, beginTask);
     
     const test_stimuli = [
       { stimulus: `
