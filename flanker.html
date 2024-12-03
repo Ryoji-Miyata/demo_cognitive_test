@@ -25,7 +25,7 @@
 
     let timeline = [];
 
-   const id_input = {
+ const id_input = {
   type: jsPsychHtmlButtonResponse,
   stimulus: `
     <h1>実験ID入力</h1>
@@ -34,6 +34,13 @@
     <p id="error_message" style="color: red; display: none;">IDは半角数字で入力してください。</p>
   `,
   choices: ["次へ"],
+  on_start: function () {
+    // エラー表示を初期化
+    const error_message = document.getElementById("error_message");
+    if (error_message) {
+      error_message.style.display = "none";
+    }
+  },
   on_finish: function (data) {
     const id = document.getElementById("participant_id").value.trim();
     if (/^[0-9]+$/.test(id)) {
@@ -49,10 +56,14 @@ timeline.push({
   loop_function: function (data) {
     const last_trial = data.values()[0];
     if (last_trial.participant_id === null) {
-      alert("IDは半角数字で入力してください。再入力をお願いします。");
+      // IDが無効な場合、エラーを表示
+      const error_message = document.getElementById("error_message");
+      if (error_message) {
+        error_message.style.display = "block";
+      }
       return true; // 再ループ
     }
-    return false; // 次に進む
+    return false; // 正常なID入力時は次に進む
   },
 });
 
