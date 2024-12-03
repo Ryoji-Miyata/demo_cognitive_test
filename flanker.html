@@ -51,23 +51,6 @@
   },
 };
 
-timeline.push({
-  timeline: [id_input],
-  loop_function: function (data) {
-    const last_trial = data.values()[0];
-    if (last_trial.participant_id === null) {
-      // IDが無効な場合、エラーを表示
-      const error_message = document.getElementById("error_message");
-      if (error_message) {
-        error_message.style.display = "block";
-      }
-      return true; // 再ループ
-    }
-    return false; // 正常なID入力時は次に進む
-  },
-});
-
-
     const enter_fullscreen = {
       type: jsPsychFullscreen,
       fullscreen_mode: true,
@@ -93,7 +76,7 @@ timeline.push({
       choices: [lang.utils.next],
       post_trial_gap: interstimuli_interval.instructions
     };
-    timeline.push(enter_fullscreen, welcome, instructions, beginTask);
+    timeline.push(id_input, enter_fullscreen, welcome, instructions, beginTask);
     
     const test_stimuli = [
       { stimulus: `
