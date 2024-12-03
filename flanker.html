@@ -94,8 +94,8 @@ const test = {
   stimulus: jsPsych.timelineVariable('stimulus'),  // ランダムに生成された刺激を表示
   choices: ['左', '右'],  // ユーザーが選択するボタン
   button_html: `
-    <button style="position: absolute; left: 10%; bottom: 10%; font-size: 20px;">左</button>
-    <button style="position: absolute; right: 10%; bottom: 10%; font-size: 20px;">右</button>
+    <button style="position: absolute; left: 15%; bottom: 15%; font-size: 60px;">左</button>
+    <button style="position: absolute; right: 15%; bottom: 15%; font-size: 60px;">右</button>
   `,  // 左右のボタンを画面下に配置
   data: {
     task: 'response',
@@ -135,17 +135,29 @@ jsPsych.run(timeline);
     }
     timeline.push(end, exit_fullscreen);
 
-    const debrief_block = {
-      type: jsPsychHtmlKeyboardResponse,
-      stimulus: function() {
-        const trials = jsPsych.data.get().filter({task: 'response'});
-        const correct_trials = trials.filter({correct: true});
-        const accuracy = Math.round(correct_trials.count() / trials.count() * 100);
-        // const rt = Math.round(correct_trials.select('rt').mean());
+   const debrief_block = {
+  type: jsPsychHtmlKeyboardResponse,
+  stimulus: function() {
+    // 'response'タスクに関するデータを取得
+    const trials = jsPsych.data.get().filter({task: 'response'});
+    
+    // 正解した試行をフィルタリング
+    const correct_trials = trials.filter({correct: true});
+    
+    // 正解率の計算
+    const accuracy = Math.round((correct_trials.length / trials.length) * 100);  // 正解率（パーセント）
+    
+    // 反応時間の計算（オプション）
+    const avg_rt = Math.round(correct_trials.select('rt').mean());  // 平均反応時間
 
-        return feedback(accuracy);
-      }
-    };
+    // フィードバックメッセージを返す
+    return `
+      <h2>実験終了</h2>
+      <p>あなたの正解率は ${accuracy}% でした。</p>
+      <p>平均反応時間は ${avg_rt} ミリ秒でした。</p>
+    `;
+  }
+};
     timeline.push(debrief_block);
 
 // ID入力タスクを最後に移動
