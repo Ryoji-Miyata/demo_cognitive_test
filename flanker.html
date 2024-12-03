@@ -23,6 +23,29 @@
       }
     });
 
+    let timeline = [];
+
+    const id_input = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus: `
+    <h1>実験ID入力</h1>
+    <p>実験を始める前に、以下の入力欄に半角数字でIDを入力してください。</p>
+    <input type="text" id="participant_id" placeholder="IDを入力" style="font-size: 18px; padding: 5px; width: 50%; margin-bottom: 10px;">
+  `,
+  choices: ["次へ"],
+  on_finish: function(data) {
+    const id = document.getElementById("participant_id").value.trim();
+    const isNumeric = /^[0-9]+$/.test(id); // 半角数字のみ許容
+    if (!isNumeric) {
+      alert("IDは半角数字で入力してください。再入力してください。");
+      jsPsych.pauseExperiment();
+      jsPsych.resumeExperiment();
+    } else {
+      data.participant_id = id; // IDをデータに保存
+    }
+  }
+};
+
     const enter_fullscreen = {
       type: jsPsychFullscreen,
       fullscreen_mode: true,
@@ -48,46 +71,7 @@
       choices: [lang.utils.next],
       post_trial_gap: interstimuli_interval.instructions
     };
-
-   let timeline = []; // タイムラインは1回だけ定義
-
-const id_input = {
-  type: jsPsychHtmlButtonResponse,
-  stimulus: `
-    <h1>実験ID入力</h1>
-    <p>実験を始める前に、以下の入力欄に半角数字でIDを入力してください。</p>
-    <input type="text" id="participant_id" placeholder="IDを入力" style="font-size: 18px; padding: 5px; width: 50%; margin-bottom: 10px;">
-    <p id="error_message" style="color: red; display: none;">IDは半角数字で入力してください。</p>
-  `,
-  choices: ["次へ"],
-  on_finish: function(data) {
-    const id = document.getElementById("participant_id").value.trim();
-    const errorMessage = document.getElementById("error_message");
-
-    // 半角数字のチェック
-    if (/^[0-9]+$/.test(id)) {
-      data.participant_id = id; // IDを保存
-      errorMessage.style.display = "none"; // エラー非表示
-    } else {
-      errorMessage.style.display = "block"; // エラー表示
-      jsPsych.endCurrentTimeline(); // タイムラインを終了して再試行
-    }
-  }
-};
-
-timeline.push({
-  timeline: [id_input], // ID入力ステップ
-  loop_function: function(data) {
-    const idData = data.values().find(d => d.participant_id !== undefined);
-    return !idData; // IDが正しく入力されるまでループ
-  }
-});
-
-// 他のセクションをタイムラインに追加
-timeline.push(enter_fullscreen, welcome, instructions, beginTask, flanker, end, exit_fullscreen, debrief_block);
-
-jsPsych.run(timeline);
-
+    timeline.push(id_input, enter_fullscreen, welcome, instructions, beginTask);
     
     const test_stimuli = [
       { stimulus: `
