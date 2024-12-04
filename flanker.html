@@ -153,28 +153,20 @@ const id_input = {
     <p id="error_message" style="color: red; display: none;">IDは半角数字で入力してください。</p>
   `,
   choices: ["送信"],
-  on_start: function() {
-    console.log("Rendering ID input screen"); // レンダリング確認用
-  },
   on_finish: function (data) {
-   setTimeout(() => { // 遅延チェックで要素が確実に生成されるようにする
-      const idInput = document.getElementById("participant_id");
-      if (idInput) {
-        const id = idInput.value.trim();
-        if (/^[0-9]+$/.test(id)) {
-          data.participant_id = id; // 有効なIDを保存
-          console.log("Valid ID entered:", id);
-        } else {
-          data.participant_id = null; // 無効なIDはnull
-          console.log("Invalid ID entered");
-        }
-      } else {
-        console.error("Input element with ID 'participant_id' not found!");
-        data.participant_id = null; // 安全策としてnullを設定
-      }
-    }, 100); 
+    // Retrieve the value of the input field during the trial
+    const inputValue = jsPsych.getDisplayElement().querySelector("#participant_id")?.value.trim();
+
+    if (inputValue && /^[0-9]+$/.test(inputValue)) {
+      data.participant_id = inputValue; // Save the valid ID
+      console.log("Valid ID entered:", inputValue);
+    } else {
+      data.participant_id = null; // Null for invalid or empty input
+      console.error("Invalid or missing ID entered.");
+    }
   },
 };
+
   
 timeline.push(id_input);
 
