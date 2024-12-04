@@ -27,30 +27,30 @@
 
     // ID入力画面
     const id_input = {
-      type: jsPsychHtmlButtonResponse,
-      stimulus: `
-        <h1>実験ID入力</h1>
-        <p>実験を終える前に、以下の入力欄に半角数字でIDを入力してください。</p>
-        <input type="text" id="participant_id" placeholder="IDを入力" style="font-size: 18px; padding: 5px; width: 50%; margin-bottom: 10px;">
-        <p id="error_message" style="color: red; display: none;">IDは半角数字で入力してください。</p>
-      `,
-      choices: ["送信"],
-      on_finish: function (data) {
-        const inputElement = jsPsych.getDisplayElement().querySelector("#participant_id");
-        const inputValue = inputElement ? inputElement.value.trim() : "";
+  type: jsPsychHtmlButtonResponse,
+  stimulus: `
+    <h1>実験ID入力</h1>
+    <p>実験を終える前に、以下の入力欄に半角数字でIDを入力してください。</p>
+    <input type="text" id="participant_id" placeholder="IDを入力" style="font-size: 18px; padding: 5px; width: 50%; margin-bottom: 10px;">
+    <p id="error_message" style="color: red; display: none;">IDは半角数字で入力してください。</p>
+  `,
+  choices: ["送信"],
+  on_finish: function (data) {
+    const inputElement = jsPsych.getDisplayElement().querySelector("#participant_id");
+    const inputValue = inputElement ? inputElement.value.trim() : "";
 
-        // 半角数字のチェック
-        if (inputValue && /^[0-9]+$/.test(inputValue)) {
-          data.participant_id = inputValue; // 有効なIDを保存
-          console.log("Valid ID entered:", inputValue);
-        } else {
-          data.participant_id = null;
-          console.error("Invalid or missing ID entered.");
-        }
-      }
-    };
+    // 半角数字のチェック
+    if (inputValue && /^[0-9]+$/.test(inputValue)) {
+      data.participant_id = inputValue; // 有効なIDを保存
+      console.log("Valid ID entered:", inputValue);
+    } else {
+      data.participant_id = null;
+      console.error("Invalid or missing ID entered.");
+    }
+  }
+};
 
-    timeline.push(id_input);
+timeline.push(id_input);
 
     const welcome = {
       type: jsPsychHtmlButtonResponse,
