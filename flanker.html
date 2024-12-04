@@ -158,10 +158,10 @@ const fixation = {
 const test = {
   type: jsPsychHtmlButtonResponse,
   stimulus: jsPsych.timelineVariable('stimulus'),
-  choices: ['L', 'R'], // 左がインデックス0, 右がインデックス1
+  choices: ['左', '右'], // 左ボタンが0、右ボタンが1となる
   button_html: `
-    <button style="position: absolute; left: 15%; bottom: 15%; font-size: 60px;">L</button>
-    <button style="position: absolute; right: 15%; bottom: 15%; font-size: 60px;">R</button>
+    <button style="position: absolute; left: 15%; bottom: 15%; font-size: 60px;">左</button>
+    <button style="position: absolute; right: 15%; bottom: 15%; font-size: 60px;">右</button>
   `,
   data: {
     task: 'response',
@@ -170,40 +170,17 @@ const test = {
   on_finish: function(data) {
     console.log("Raw data.response value (ボタンインデックス):", data.response);
     
-    // ボタンインデックスの値に基づき、'l'（左）または 'r'（右）を設定
-    let response;
-    if (data.response === 0) {
-      response = 'l'; // 左ボタンが押された場合
-    } else if (data.response === 1) {
-      response = 'r'; // 右ボタンが押された場合
-    }
+    const response = data.response === 0 ? 'l' : 'r'; // 左: 'l', 右: 'r'
+    console.log("Transformed response value:", response);
 
-    // 中央の記号とボタン入力が一致しているかを判定
     if (data.correct_response === 'R') {
-      if (response === 'r') {
-        data.correct = true;
-        data.result = "正解 (R=r)";
-      } else {
-        data.correct = false;
-        data.result = "不正解 (R=l)";
-      }
+      data.correct = (response === 'r');
     } else if (data.correct_response === 'L') {
-      if (response === 'l') {
-        data.correct = true;
-        data.result = "正解 (L=l)";
-      } else {
-        data.correct = false;
-        data.result = "不正解 (L=r)";
-      }
+      data.correct = (response === 'l');
     }
-
-    // デバッグ情報
-    console.log("Correct Response:", data.correct_response);  // 'R' または 'L'
-    console.log("User Response:", response);  // 'l' または 'r'
-    console.log("Correct:", data.correct);  // true または false
-    console.log("Result:", data.result);  // 正解/不正解情報
   }
 };
+
 
 
 // flanker課題をタイムラインに追加
