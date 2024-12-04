@@ -76,62 +76,64 @@
     };
     timeline.push(welcome, instructions, beginTask);
 
-    const test_stimuli = [];
-    for (let i = 0; i < 10; i++) {
-      test_stimuli.push(generateFlankerStimulus());  // 10問分のフランカー刺激を生成
-    }
+   const test_stimuli = [];
+for (let i = 0; i < 10; i++) {
+  test_stimuli.push(generateFlankerStimulus());  // 10問分のフランカー刺激を生成
+}
 
-    // generateFlankerStimulus関数の定義
-    function generateFlankerStimulus() {
-      const symbols = ['＜', '＞'];
-      let stimulus = [];
-      for (let i = 0; i < 5; i++) {
-        stimulus.push(symbols[Math.floor(Math.random() * symbols.length)]);
-      }
+// generateFlankerStimulus関数の定義
+function generateFlankerStimulus() {
+  const symbols = ['＜', '＞'];
+  let stimulus = [];
+  for (let i = 0; i < 5; i++) {
+    stimulus.push(symbols[Math.floor(Math.random() * symbols.length)]);
+  }
 
-      const correct_response = stimulus[2] === '＞' ? 'left' : 'right';
-      return {
-        stimulus: `<span class="text">${stimulus.join('')}</span>`,
-        correct_response: correct_response
-      };
-    }
+  // 正解のレスポンスをインデックスで決定
+  const correct_response = stimulus[2] === '＞' ? 0 : 1;  // 0: 左, 1: 右
+  return {
+    stimulus: `<span class="text">${stimulus.join('')}</span>`,
+    correct_response: correct_response
+  };
+}
 
-    const fixation = {
-      type: jsPsychHtmlKeyboardResponse,
-      stimulus: '<div class="text">+</div>',
-      choices: "NO_KEYS",
-      trial_duration: 1000,
-      data: {
-        task: 'fixation'
-      }
-    };
+const fixation = {
+  type: jsPsychHtmlKeyboardResponse,
+  stimulus: '<div class="text">+</div>',
+  choices: "NO_KEYS",
+  trial_duration: 1000,
+  data: {
+    task: 'fixation'
+  }
+};
 
-    const test = {
-      type: jsPsychHtmlButtonResponse,
-      stimulus: jsPsych.timelineVariable('stimulus'),
-      choices: ['左', '右'],
-      button_html: `
-        <button style="position: absolute; left: 15%; bottom: 15%; font-size: 60px;">左</button>
-        <button style="position: absolute; right: 15%; bottom: 15%; font-size: 60px;">右</button>
-      `,
-      data: {
-        task: 'response',
-        correct_response: jsPsych.timelineVariable('correct_response')
-      },
-      on_finish: function(data) {
-        data.correct = (data.response === data.correct_response);
-      }
-    };
+const test = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus: jsPsych.timelineVariable('stimulus'),
+  choices: ['左', '右'],
+  button_html: `
+    <button style="position: absolute; left: 15%; bottom: 15%; font-size: 60px;">左</button>
+    <button style="position: absolute; right: 15%; bottom: 15%; font-size: 60px;">右</button>
+  `,
+  data: {
+    task: 'response',
+    correct_response: jsPsych.timelineVariable('correct_response')  // 正解のインデックスを取得
+  },
+  on_finish: function(data) {
+    // ユーザーがクリックしたボタンのインデックスと正解のインデックスを比較
+    data.correct = (data.response === data.correct_response);
+  }
+};
 
-    // flanker課題をタイムラインに追加
-    const flanker = {
-      timeline: [fixation, test],
-      timeline_variables: test_stimuli,
-      randomize_order: true,
-      repetitions: 1
-    };
+// flanker課題をタイムラインに追加
+const flanker = {
+  timeline: [fixation, test],
+  timeline_variables: test_stimuli,
+  randomize_order: true,
+  repetitions: 1
+};
 
-    timeline.push(flanker);
+timeline.push(flanker);
 
     const end = {
       type: jsPsychHtmlButtonResponse,
