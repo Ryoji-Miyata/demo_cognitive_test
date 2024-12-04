@@ -26,78 +26,77 @@
     let timeline = [];
 
     // ID入力画面
-const id_input = {
-  type: jsPsychHtmlButtonResponse,
-  stimulus: `
-    <h1>実験ID入力</h1>
-    <p>実験を始める前に、以下の入力欄に半角数字でIDを入力してください。</p>
-    <input type="text" id="participant_id" inputmode="numeric" pattern="[0-9]*" placeholder="IDを入力" style="font-size: 18px; padding: 5px; width: 50%; margin-bottom: 10px;">
-    <p id="error_message" style="color: red; display: none;">IDは半角数字で入力してください。</p>
-  `,
-  choices: ["送信"],
-  button_html: `<button style="font-size: 18px;">%choice%</button>`,
-  on_finish: function () {
-    const inputElement = document.getElementById("participant_id");
-    const inputValue = inputElement ? inputElement.value.trim() : "";
+    const id_input = {
+      type: jsPsychHtmlButtonResponse,
+      stimulus: `
+        <h1>実験ID入力</h1>
+        <p>実験を始める前に、以下の入力欄に半角数字でIDを入力してください。</p>
+        <input type="text" id="participant_id" inputmode="numeric" pattern="[0-9]*" placeholder="IDを入力" style="font-size: 18px; padding: 5px; width: 50%; margin-bottom: 10px;">
+        <p id="error_message" style="color: red; display: none;">IDは半角数字で入力してください。</p>
+      `,
+      choices: ["送信"],
+      button_html: `<button style="font-size: 18px;">%choice%</button>`,
+      on_finish: function () {
+        const inputElement = document.getElementById("participant_id");
+        const inputValue = inputElement ? inputElement.value.trim() : "";
 
-    if (/^[0-9]+$/.test(inputValue)) {
-      // IDをグローバルに保存
-      jsPsych.data.addProperties({ participant_id: inputValue });
-      console.log("ID saved:", inputValue);
-    } else {
-      console.error("Invalid or missing ID entered.");
-    }
-  },
-  on_load: function () {
-    const button = document.querySelector("button");
-    button.addEventListener("click", function () {
-      const inputElement = document.getElementById("participant_id");
-      const inputValue = inputElement ? inputElement.value.trim() : "";
-      const errorMessage = document.getElementById("error_message");
+        if (/^[0-9]+$/.test(inputValue)) {
+          // IDをグローバルに保存
+          jsPsych.data.addProperties({ participant_id: inputValue });
+          console.log("ID saved:", inputValue);
+        } else {
+          console.error("Invalid or missing ID entered.");
+        }
+      },
+      on_load: function () {
+        const button = document.querySelector("button");
+        button.addEventListener("click", function () {
+          const inputElement = document.getElementById("participant_id");
+          const inputValue = inputElement ? inputElement.value.trim() : "";
+          const errorMessage = document.getElementById("error_message");
 
-      if (/^[0-9]+$/.test(inputValue)) {
-        jsPsych.finishTrial(); // 入力が正しい場合、次へ進む
-      } else {
-        errorMessage.style.display = "block"; // エラーメッセージを表示
+          if (/^[0-9]+$/.test(inputValue)) {
+            jsPsych.finishTrial(); // 入力が正しい場合、次へ進む
+          } else {
+            errorMessage.style.display = "block"; // エラーメッセージを表示
+          }
+        });
       }
-    });
-  }
-};
+    };
     timeline.push(id_input);
 
-    //選択画面
+    // 選択画面
     const choices = [
-    { label: "起床時", value: 1 },
-    { label: "昼食後", value: 2 },
-    { label: "就寝前", value: 3 }
-  ];
+      { label: "起床時", value: 1 },
+      { label: "昼食後", value: 2 },
+      { label: "就寝前", value: 3 }
+    ];
 
-  const selection_screen = {
-    type: jsPsychHtmlButtonResponse,
-    stimulus: `
-      <h1>選択肢を選んでください</h1>
-      <p>「A」「B」「C」の中から1つだけ選択してください。</p>
-    `,
-    choices: choices.map(choice => choice.label), // ボタンのラベル
-    button_html: `
-      <button class="choice-button" style="font-size: 18px; margin: 5px;">%choice%</button>
-    `,
-    on_finish: function (data) {
-      const selectedIndex = data.response;
-      const selectedChoice = choices[selectedIndex];
-      // 選択された値をデータプロパティに保存
-      jsPsych.data.addProperties({
-        selected_choice_label: selectedChoice.label,
-        selected_choice_value: selectedChoice.value
-      });
+    const selection_screen = {
+      type: jsPsychHtmlButtonResponse,
+      stimulus: `
+        <h1>選択肢を選んでください</h1>
+        <p>「A」「B」「C」の中から1つだけ選択してください。</p>
+      `,
+      choices: choices.map(choice => choice.label), // ボタンのラベル
+      button_html: `<button class="choice-button" style="font-size: 18px; margin: 5px;">%choice%</button>`,
+      on_finish: function (data) {
+        const selectedIndex = data.response; // 0: "起床時", 1: "昼食後", 2: "就寝前"
+        const selectedChoice = choices[selectedIndex];
+        // 選択された値をデータプロパティに保存
+        jsPsych.data.addProperties({
+          selected_choice_label: selectedChoice.label,
+          selected_choice_value: selectedChoice.value
+        });
 
-      console.log(`選択された値: ${selectedChoice.label} (${selectedChoice.value})`);
-    }
-  };
+        console.log(`選択された値: ${selectedChoice.label} (${selectedChoice.value})`);
+      }
+    };
 
-  // タイムラインに追加
-  timeline.push(selection_screen);
+    // タイムラインに追加
+    timeline.push(selection_screen);
 
+    // ウェルカム画面と説明画面
     const welcome = {
       type: jsPsychHtmlButtonResponse,
       stimulus: lang.welcome,
@@ -118,64 +117,65 @@ const id_input = {
     };
     timeline.push(welcome, instructions, beginTask);
 
-   const test_stimuli = [];
-for (let i = 0; i < 3; i++) {
-  test_stimuli.push(generateFlankerStimulus());  // 10問分のフランカー刺激を生成
-}
+    // フランカー課題の生成
+    const test_stimuli = [];
+    for (let i = 0; i < 3; i++) {
+      test_stimuli.push(generateFlankerStimulus());  // 3問分のフランカー刺激を生成
+    }
 
-// generateFlankerStimulus関数の定義
-function generateFlankerStimulus() {
-  const symbols = ['＜', '＞'];
-  let stimulus = [];
-  for (let i = 0; i < 5; i++) {
-    stimulus.push(symbols[Math.floor(Math.random() * symbols.length)]);
-  }
+    // generateFlankerStimulus関数の定義
+    function generateFlankerStimulus() {
+      const symbols = ['＜', '＞'];
+      let stimulus = [];
+      for (let i = 0; i < 5; i++) {
+        stimulus.push(symbols[Math.floor(Math.random() * symbols.length)]);
+      }
 
-  // 正解のレスポンスをインデックスで決定
-  const correct_response = stimulus[2] === '＞' ? 0 : 1;  // 0: 左, 1: 右
-  return {
-    stimulus: `<span class="text">${stimulus.join('')}</span>`,
-    correct_response: correct_response
-  };
-}
+      // 正解のレスポンスをインデックスで決定
+      const correct_response = stimulus[2] === '＞' ? 0 : 1;  // 0: 左, 1: 右
+      return {
+        stimulus: `<span class="text">${stimulus.join('')}</span>`,
+        correct_response: correct_response
+      };
+    }
 
-const fixation = {
-  type: jsPsychHtmlKeyboardResponse,
-  stimulus: '<div class="text">+</div>',
-  choices: "NO_KEYS",
-  trial_duration: 1000,
-  data: {
-    task: 'fixation'
-  }
-};
+    const fixation = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: '<div class="text">+</div>',
+      choices: "NO_KEYS",
+      trial_duration: 1000,
+      data: {
+        task: 'fixation'
+      }
+    };
 
-const test = {
-  type: jsPsychHtmlButtonResponse,
-  stimulus: jsPsych.timelineVariable('stimulus'),
-  choices: ['左', '右'],
-  button_html: `
-    <button style="position: absolute; left: 15%; bottom: 15%; font-size: 60px;">左</button>
-    <button style="position: absolute; right: 15%; bottom: 15%; font-size: 60px;">右</button>
-  `,
-  data: {
-    task: 'response',
-    correct_response: jsPsych.timelineVariable('correct_response')  // 正解のインデックスを取得
-  },
-  on_finish: function(data) {
-    // ユーザーがクリックしたボタンのインデックスと正解のインデックスを比較
-    data.correct = (data.response === data.correct_response);
-  }
-};
+    const test = {
+      type: jsPsychHtmlButtonResponse,
+      stimulus: jsPsych.timelineVariable('stimulus'),
+      choices: ['左', '右'],
+      button_html: `
+        <button style="position: absolute; left: 15%; bottom: 15%; font-size: 60px;">左</button>
+        <button style="position: absolute; right: 15%; bottom: 15%; font-size: 60px;">右</button>
+      `,
+      data: {
+        task: 'response',
+        correct_response: jsPsych.timelineVariable('correct_response')  // 正解のインデックスを取得
+      },
+      on_finish: function(data) {
+        // ユーザーがクリックしたボタンのインデックスと正解のインデックスを比較
+        data.correct = (data.response === data.correct_response);
+      }
+    };
 
-// flanker課題をタイムラインに追加
-const flanker = {
-  timeline: [fixation, test],
-  timeline_variables: test_stimuli,
-  randomize_order: true,
-  repetitions: 1
-};
+    // flanker課題をタイムラインに追加
+    const flanker = {
+      timeline: [fixation, test],
+      timeline_variables: test_stimuli,
+      randomize_order: true,
+      repetitions: 1
+    };
 
-timeline.push(flanker);
+    timeline.push(flanker);
 
     const end = {
       type: jsPsychHtmlButtonResponse,
@@ -190,28 +190,27 @@ timeline.push(flanker);
     }
     timeline.push(end, exit_fullscreen);
 
-    
     const debrief_block = {
-  type: jsPsychHtmlButtonResponse,
-  stimulus: function() {
-    const trials = jsPsych.data.get().filter({task: 'response'});
-    const correct_trials = trials.filter({correct: true});
-    const accuracy = Math.round(correct_trials.count() / trials.count() * 100);
-    return feedback(accuracy);  // フィードバックの内容を表示
-  },
-  choices: ["終了"],  // ボタンのテキスト
-  on_finish: function(data) {
-    // ボタンが押されたときに行う処理をここに記述
-    console.log('終了ボタンが押されました');
-  }
-};
+      type: jsPsychHtmlButtonResponse,
+      stimulus: function() {
+        const trials = jsPsych.data.get().filter({task: 'response'});
+        const correct_trials = trials.filter({correct: true});
+        const accuracy = Math.round(correct_trials.count() / trials.count() * 100);
+        return feedback(accuracy);  // フィードバックの内容を表示
+      },
+      choices: ["終了"],  // ボタンのテキスト
+      on_finish: function(data) {
+        // ボタンが押されたときに行う処理をここに記述
+        console.log('終了ボタンが押されました');
+      }
+    };
     timeline.push(debrief_block);
 
     // 実験を実行
     jsPsych.run(timeline);
 
- // データをサーバに送信する関数
-function sendDataToServer(csvData) {
+    // データをサーバに送信する関数
+    function sendDataToServer(csvData) {
   // グローバルに保存されたparticipant_idを取得
   const participantId = jsPsych.data.get().last(1).values()[0].participant_id || "no_id"; 
   const now = new Date();
