@@ -221,9 +221,12 @@
     function sendDataToServer(csvData) {
   // グローバルに保存されたparticipant_idを取得
   const participantId = jsPsych.data.get().last(1).values()[0].participant_id || "no_id"; 
+      // 実験タイミングを取得
+  const timing = jsPsych.data.get().last(1).values()[0].selected_timing_value || "no_timing"; 
   const now = new Date();
   const timestamp = `${now.getFullYear()}_${(now.getMonth() + 1).toString().padStart(2, '0')}_${now.getDate().toString().padStart(2, '0')}_${now.getHours().toString().padStart(2, '0')}_${now.getMinutes().toString().padStart(2, '0')}_${now.getSeconds().toString().padStart(2, '0')}`;
-  const filename = `flanker1_${participantId}_${timestamp}.csv`;
+   // ファイル名を変更：flanker1_id_実験タイミングの番号_timestamp
+　 const filename = `flanker1_${participantId}_${timing}_${timestamp}.csv`;
 
   console.log("Generated filename:", filename); // ファイル名確認用
 
