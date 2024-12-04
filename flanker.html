@@ -153,49 +153,24 @@ const id_input = {
     <p id="error_message" style="color: red; display: none;">IDは半角数字で入力してください。</p>
   `,
   choices: ["送信"],
-  on_start: function () {
-    // エラー表示を初期化
-    const error_message = document.getElementById("error_message");
-    const button = document.querySelector('button');
-    if (error_message) {
-      error_message.style.display = "none";
-    }
-    if (button) {
-      button.disabled = false; // ボタンを有効にしておく
-    }
-  },
   on_finish: function (data) {
-  const idInput = document.getElementById("participant_id");
-    console.log(idInput);
-  if (idInput) { // 要素が存在するかチェック
-    const id = idInput.value.trim();
-    if (/^[0-9]+$/.test(id)) {
-      data.participant_id = id; // 有効なIDを保存
-      console.log("Valid ID entered:", id);
+    const idInput = document.getElementById("participant_id");
+    if (idInput) { // 要素が存在するかチェック
+      const id = idInput.value.trim();
+      if (/^[0-9]+$/.test(id)) {
+        data.participant_id = id; // 有効なIDを保存
+        console.log("Valid ID entered:", id);
+      } else {
+        data.participant_id = null; // 無効なIDはnull
+        console.log("Invalid ID entered");
+      }
     } else {
-      data.participant_id = null; // 無効なIDはnull
-      console.log("Invalid ID entered");
+      console.error("Input element with ID 'participant_id' not found!");
+      data.participant_id = null; // 安全策としてnullを設定
     }
-  } else {
-    console.error("Input element with ID 'participant_id' not found!");
-    data.participant_id = null; // 安全策としてnullを設定
-  }
-},
-
-};
-
-// ID入力の再試行ループを追加
-timeline.push({
-  timeline: [id_input],
-  loop_function: function (data) {
-    const last_trial = jsPsych.data.get().last(1).values()[0]; // 最後の試行データを取得
-    if (!last_trial.participant_id) {
-      // 無効なIDの場合、再試行を促す
-      return true; // 再試行
-    }
-    return false; // 正常なIDの場合は次に進む
   },
-});
+};
+timeline.push(id_input);
 
 // 実験を実行
 jsPsych.run(timeline);
