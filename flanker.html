@@ -40,24 +40,34 @@ const id_input = {
   choices: ["送信"],
   on_start: function () {
     console.log("Rendering the input screen...");
+    // Remove any previous error message
+    const errorMessage = document.getElementById("error_message");
+    if (errorMessage) {
+      errorMessage.style.display = "none";
+    }
   },
   on_finish: function (data) {
-    setTimeout(() => {
-      // Ensure the DOM is ready before querying the input element
-      const inputElement = jsPsych.getDisplayElement().querySelector("#participant_id");
-      const inputValue = inputElement?.value.trim();
+    // Query the input field when the trial is finished
+    const inputElement = jsPsych.getDisplayElement().querySelector("#participant_id");
+    const inputValue = inputElement ? inputElement.value.trim() : "";
 
-      if (inputValue && /^[0-9]+$/.test(inputValue)) {
-        participantId = inputValue; // Cache the valid ID
-        data.participant_id = inputValue; // Save it in jsPsych data
-        console.log("Valid ID entered:", inputValue);
-      } else {
-        data.participant_id = null; // Mark as invalid
-        console.error("Invalid or missing ID entered.");
+    // Validate input
+    if (inputValue && /^[0-9]+$/.test(inputValue)) {
+      participantId = inputValue; // Cache the valid ID globally
+      data.participant_id = inputValue; // Also store in jsPsych data
+      console.log("Valid ID entered:", inputValue);
+    } else {
+      // If the ID is invalid, show the error message
+      const errorMessage = document.getElementById("error_message");
+      if (errorMessage) {
+        errorMessage.style.display = "block"; // Display error message
       }
-    }, 100); // Small delay to ensure the DOM has updated
+      data.participant_id = null; // Mark as invalid
+      console.error("Invalid or missing ID entered.");
+    }
   },
 };
+
 
 
 // Later in the experiment, you can use `participantId` where needed
