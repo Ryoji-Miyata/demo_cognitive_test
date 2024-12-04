@@ -66,50 +66,42 @@
     timeline.push(id_input);
 
    
-    // 選択画面
-    const choices = [
-      { label: "起床時", value: 1 },
+   // 実験を受けるタイミングを選択する画面
+    const timing_choices = [
+      { label: "起床後", value: 1 },
       { label: "昼食後", value: 2 },
       { label: "就寝前", value: 3 }
     ];
 
-    const selection_screen = {
-  type: jsPsychHtmlButtonResponse,
-  stimulus: `
-    <h1>選択肢を選んでください</h1>
-    <p>「A」「B」「C」の中から1つだけ選択してください。</p>
-  `,
-  choices: choices.map(choice => choice.label), // ボタンのラベル
-  button_html: `<button class="choice-button" style="font-size: 18px; margin: 5px;">%choice%</button>`,
-  on_finish: function (data) {
-    const selectedIndex = data.response; // ボタンのインデックス
-    const selectedChoice = choices[selectedIndex]; // 選択されたオプション
+    const timing_screen = {
+      type: jsPsychHtmlButtonResponse,
+      stimulus: `
+        <h1>実験を受けるタイミングを選んでください</h1>
+        <p>「起床後」「昼食後」「就寝前」のいずれかを選択してください。</p>
+      `,
+      choices: timing_choices.map(choice => choice.label), // ボタンのラベル
+      button_html: `<button style="font-size: 18px; margin: 5px;">%choice%</button>`,
+      on_finish: function (data) {
+        const selectedIndex = data.response; // ボタンのインデックス
+        const selectedChoice = timing_choices[selectedIndex]; // 選択されたオプション
 
-    if (selectedChoice) {
-      // 選択された値をデータプロパティに保存
-      jsPsych.data.addProperties({
-        selected_choice_label: selectedChoice.label,
-        selected_choice_value: selectedChoice.value
-      });
-      console.log(`選択された値: ${selectedChoice.label} (${selectedChoice.value})`);
-    } else {
-      // 選択がされていない場合
-      console.error("選択肢が選ばれていません");
-    }
-  },
-  // 自動で選択されないように、クリック前に進まないように
-  on_load: function() {
-    const buttons = document.querySelectorAll(".choice-button");
-    buttons.forEach((button, index) => {
-      button.addEventListener("click", () => {
-        jsPsych.pluginAPI.setProgressBar((index + 1) / buttons.length); // 進捗バーを更新（必要であれば）
-        jsPsych.finishTrial(); // ボタンがクリックされたら次に進む
-      });
-    });
-  }
-};
-       // タイムラインに追加
-    timeline.push(selection_screen);
+        if (selectedChoice) {
+          // 選択された値をデータプロパティに保存
+          jsPsych.data.addProperties({
+            selected_timing_label: selectedChoice.label,
+            selected_timing_value: selectedChoice.value
+          });
+
+          console.log(`選択されたタイミング: ${selectedChoice.label} (${selectedChoice.value})`);
+        } else {
+          // 選択がされていない場合
+          console.error("選択肢が選ばれていません");
+        }
+      }
+    };
+
+    // タイムラインに追加
+    timeline.push(timing_screen);
     
 
     // ウェルカム画面と説明画面
