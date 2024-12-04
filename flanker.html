@@ -39,26 +39,27 @@ const id_input = {
   `,
   choices: ["送信"],
   on_finish: function (data) {
-    const inputValue = jsPsych.getDisplayElement().querySelector("#participant_id")?.value.trim();
-   const inputValue = idInput.value.trim(); // Retrieve and trim the input value
-      console.log("Retrieved input value:", inputValue);
+    setTimeout(() => { // 遅延を設けることで描画タイミングの問題を回避
+      const idInput = document.getElementById("participant_id");
+      if (idInput) {
+        const inputValue = idInput.value.trim();
+        console.log("Input value before validation:", inputValue);
 
-      if (inputValue && /^[0-9]+$/.test(inputValue)) {
-        participantId = inputValue; // Cache the valid ID in the global variable
-        data.participant_id = inputValue; // Store in jsPsych data
-        console.log("Valid ID entered:", inputValue);
+        if (inputValue && /^[0-9]+$/.test(inputValue)) {
+          participantId = inputValue; // IDをグローバル変数にキャッシュ
+          data.participant_id = inputValue; // jsPsychのデータに保存
+          console.log("Valid ID entered:", inputValue);
+        } else {
+          data.participant_id = null; // 無効な場合
+          console.error("Invalid or missing ID entered.");
+        }
       } else {
-        data.participant_id = null; // Set to null for invalid inputs
-        console.error("Invalid ID entered:", inputValue);
-        // Optionally, show an error message to the user
-        idInput.insertAdjacentHTML(
-          'afterend',
-          '<p style="color: red;">入力が無効です。半角数字のみ入力してください。</p>'
-        );
+        console.error("Input element not found in DOM!");
+        data.participant_id = null; // DOM要素が見つからない場合
+      }
+    }, 100); // 100msの遅延
   },
 };
-
-// Later in the experiment, you can use `participantId` where needed
   
 timeline.push(id_input);
 
