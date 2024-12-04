@@ -158,7 +158,7 @@ const fixation = {
 const test = {
   type: jsPsychHtmlButtonResponse,
   stimulus: jsPsych.timelineVariable('stimulus'),
-  choices: ['左', '右'], // ボタンの順序を指定
+  choices: ['左', '右'], // 左がインデックス0, 右がインデックス1
   button_html: `
     <button style="position: absolute; left: 15%; bottom: 15%; font-size: 60px;">左</button>
     <button style="position: absolute; right: 15%; bottom: 15%; font-size: 60px;">右</button>
@@ -168,45 +168,40 @@ const test = {
     correct_response: jsPsych.timelineVariable('correct_response') // 'R' または 'L'
   },
   on_finish: function(data) {
-    // ボタン入力のインデックスを取得 (0 または 1)
     console.log("Raw data.response value (ボタンインデックス):", data.response);
-
-    // ユーザーのレスポンスを 'l' または 'r' に変換
+    
+    // ボタンインデックスの値に基づき、'l'（左）または 'r'（右）を設定
     let response;
     if (data.response === 0) {
-      response = 'l'; // 左ボタン
+      response = 'l'; // 左ボタンが押された場合
     } else if (data.response === 1) {
-      response = 'r'; // 右ボタン
-    } else {
-      response = 'unknown'; // 念のため、不明なケースをキャッチ
+      response = 'r'; // 右ボタンが押された場合
     }
 
-    // 判定ロジック：中央の記号とボタン入力が一致しているかをチェック
+    // 中央の記号とボタン入力が一致しているかを判定
     if (data.correct_response === 'R') {
       if (response === 'r') {
-        data.correct = true; // 中央が 'R' のとき、右ボタンが正解
+        data.correct = true;
         data.result = "正解 (R=r)";
       } else {
-        data.correct = false; // 中央が 'R' のとき、左ボタンが不正解
+        data.correct = false;
         data.result = "不正解 (R=l)";
       }
     } else if (data.correct_response === 'L') {
       if (response === 'l') {
-        data.correct = true; // 中央が 'L' のとき、左ボタンが正解
+        data.correct = true;
         data.result = "正解 (L=l)";
       } else {
-        data.correct = false; // 中央が 'L' のとき、右ボタンが不正解
+        data.correct = false;
         data.result = "不正解 (L=r)";
       }
     }
 
-    // デバッグ情報の出力
-    console.log("Stimulus (中央の記号):", data.stimulus); // 表示された不等号列
-    console.log("Correct Response (正解):", data.correct_response); // 正解 ('R' or 'L')
-    console.log("User Response Index (ボタンインデックス):", data.response); // ボタンインデックス (0 or 1)
-    console.log("User Response (入力):", response); // ユーザーの入力 ('l' or 'r')
-    console.log("Correct (正解判定):", data.correct); // 判定結果 (true or false)
-    console.log("Result (詳細判定):", data.result); // 詳細な正解/不正解情報
+    // デバッグ情報
+    console.log("Correct Response:", data.correct_response);  // 'R' または 'L'
+    console.log("User Response:", response);  // 'l' または 'r'
+    console.log("Correct:", data.correct);  // true または false
+    console.log("Result:", data.result);  // 正解/不正解情報
   }
 };
 
