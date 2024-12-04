@@ -146,15 +146,21 @@
     }
     timeline.push(end, exit_fullscreen);
 
+    
     const debrief_block = {
-      type: jsPsychHtmlKeyboardResponse,
-      stimulus: function() {
-        const trials = jsPsych.data.get().filter({task: 'response'});
-        const correct_trials = trials.filter({correct: true});
-        const accuracy = Math.round(correct_trials.count() / trials.count() * 100);
-        return feedback(accuracy);
-      }
-    };
+  type: jsPsychHtmlButtonResponse,
+  stimulus: function() {
+    const trials = jsPsych.data.get().filter({task: 'response'});
+    const correct_trials = trials.filter({correct: true});
+    const accuracy = Math.round(correct_trials.count() / trials.count() * 100);
+    return feedback(accuracy);  // フィードバックの内容を表示
+  },
+  choices: ["終了"],  // ボタンのテキスト
+  on_finish: function(data) {
+    // ボタンが押されたときに行う処理をここに記述
+    console.log('終了ボタンが押されました');
+  }
+};
     timeline.push(debrief_block);
 
     // 実験を実行
