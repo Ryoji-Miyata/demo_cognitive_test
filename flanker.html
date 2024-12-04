@@ -158,10 +158,10 @@ const fixation = {
 const test = {
   type: jsPsychHtmlButtonResponse,
   stimulus: jsPsych.timelineVariable('stimulus'),
-  choices: ['左', '右'], // 左がインデックス0, 右がインデックス1
+  choices: ['L', 'R'], // 左がインデックス0, 右がインデックス1
   button_html: `
-    <button style="position: absolute; left: 15%; bottom: 15%; font-size: 60px;">左</button>
-    <button style="position: absolute; right: 15%; bottom: 15%; font-size: 60px;">右</button>
+    <button style="position: absolute; left: 15%; bottom: 15%; font-size: 60px;">L</button>
+    <button style="position: absolute; right: 15%; bottom: 15%; font-size: 60px;">R</button>
   `,
   data: {
     task: 'response',
