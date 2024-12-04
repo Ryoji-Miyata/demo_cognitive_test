@@ -36,10 +36,9 @@
       type: jsPsychHtmlButtonResponse,
       stimulus: `
         <h1>実験を受けるタイミングを選んでください</h1>
-        <p>「起床後」「昼食後」「就寝前」のいずれかを選択してください。</p>
       `,
       choices: timing_choices.map(choice => choice.label), // ボタンのラベル
-      button_html: `<button style="font-size: 18px; margin: 5px;">%choice%</button>`,
+      button_html: `<button style="font-size: 30px; margin: 15px;">%choice%</button>`,
       on_finish: function (data) {
         const selectedIndex = data.response; // ボタンのインデックス
         const selectedChoice = timing_choices[selectedIndex]; // 選択されたオプション
