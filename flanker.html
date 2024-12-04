@@ -127,7 +127,7 @@
 // フランカー課題の生成
 const test_stimuli = [];
 for (let i = 0; i < 5; i++) {
-  test_stimuli.push(generateFlankerStimulus());  // 5問分のフランカー刺激を生成
+  test_stimuli.push(generateFlankerStimulus()); // 5問分のフランカー刺激を生成
 }
 
 // generateFlankerStimulus関数の定義
@@ -138,9 +138,8 @@ function generateFlankerStimulus() {
     stimulus.push(symbols[Math.floor(Math.random() * symbols.length)]);
   }
 
-  // 正解のレスポンスをインデックスで決定
-  // 中央のシンボルが「＜」なら右（1）、「＞」なら左（0）
-  const correct_response = stimulus[2] === '＜' ? 1 : 0;  // 1: 右, 0: 左
+  // 中央のシンボルを数値に変換：＞ = 0, ＜ = 1
+  const correct_response = stimulus[2] === '＞' ? 0 : 1;
   return {
     stimulus: `<span class="text">${stimulus.join('')}</span>`,
     correct_response: correct_response
@@ -160,19 +159,19 @@ const fixation = {
 const test = {
   type: jsPsychHtmlButtonResponse,
   stimulus: jsPsych.timelineVariable('stimulus'),
-  choices: ['左', '右'],
+  choices: ['左', '右'], // ボタンの順序を指定
   button_html: `
     <button style="position: absolute; left: 15%; bottom: 15%; font-size: 60px;">左</button>
     <button style="position: absolute; right: 15%; bottom: 15%; font-size: 60px;">右</button>
   `,
   data: {
     task: 'response',
-    correct_response: jsPsych.timelineVariable('correct_response')  // 正解のインデックスを取得
+    correct_response: jsPsych.timelineVariable('correct_response') // 正解のインデックスを取得
   },
   on_finish: function(data) {
     // ユーザーのレスポンス（インデックス番号）を取得
-    const response = data.response;  // 0 または 1 のインデックスが返される
-    data.correct = (response === data.correct_response);  // 正解との一致を判定
+    const response = data.response; // 左: 0, 右: 1
+    data.correct = (response === data.correct_response); // 正解との一致を判定
   }
 };
 
@@ -185,7 +184,6 @@ const flanker = {
 };
 
 timeline.push(flanker);
-
 
     const end = {
       type: jsPsychHtmlButtonResponse,
