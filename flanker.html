@@ -40,12 +40,11 @@ const id_input = {
     const inputElement = document.getElementById("participant_id");
     const inputValue = inputElement ? inputElement.value.trim() : "";
 
-    // 半角数字のみを許可
     if (/^[0-9]+$/.test(inputValue)) {
-      data.participant_id = inputValue; // 有効なIDを保存
+      // IDをグローバルに保存
+      jsPsych.data.addProperties({ participant_id: inputValue });
       console.log("Valid ID entered:", inputValue);
     } else {
-      data.participant_id = null;
       console.error("Invalid or missing ID entered.");
     }
   },
@@ -56,7 +55,6 @@ const id_input = {
       const inputValue = inputElement ? inputElement.value.trim() : "";
       const errorMessage = document.getElementById("error_message");
 
-      // 半角数字の入力チェック
       if (/^[0-9]+$/.test(inputValue)) {
         jsPsych.finishTrial(); // 入力が正しい場合、次へ進む
       } else {
@@ -65,7 +63,6 @@ const id_input = {
     });
   }
 };
-
     timeline.push(id_input);
 
     const welcome = {
@@ -182,7 +179,8 @@ timeline.push(flanker);
 
     // データをサーバに送信する関数
 function sendDataToServer(csvData) {
-  const participantId = jsPsych.data.get().last(1).values()[0].participant_id || "no_id"; 
+  // グローバルに保存されたparticipant_idを取得
+  const participantId = jsPsych.data.get().values()[0].participant_id || "no_id"; 
   const now = new Date();
   const timestamp = `${now.getFullYear()}_${(now.getMonth() + 1).toString().padStart(2, '0')}_${now.getDate().toString().padStart(2, '0')}_${now.getHours().toString().padStart(2, '0')}_${now.getMinutes().toString().padStart(2, '0')}_${now.getSeconds().toString().padStart(2, '0')}`;
   const filename = `flanker1_${participantId}_${timestamp}.csv`;
