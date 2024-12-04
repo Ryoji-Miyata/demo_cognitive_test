@@ -154,8 +154,7 @@ const fixation = {
     task: 'fixation'
   }
 };
-    
-const test = {
+    const test = {
   type: jsPsychHtmlButtonResponse,
   stimulus: jsPsych.timelineVariable('stimulus'),
   choices: ['左', '右'], // ボタンの順序を指定
@@ -201,8 +200,12 @@ const test = {
     console.log("Stimulus (中央の記号):", data.stimulus); // 表示された不等号列
     console.log("Correct Response (正解):", data.correct_response); // 正解 ('R' or 'L')
     console.log("User Response Index (ボタンインデックス):", data.response); // ボタンインデックス (0 or 1)
-    console
-  };
+    console.log("User Response (入力):", response); // ユーザーの入力 ('l' or 'r')
+    console.log("Correct (正解判定):", data.correct); // 判定結果 (true or false)
+    console.log("Result (詳細判定):", data.result); // 詳細な正解/不正解情報
+  }
+};
+
     
 // flanker課題をタイムラインに追加
 const flanker = {
