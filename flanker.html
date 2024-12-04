@@ -27,7 +27,7 @@
 
     
 // ID入力タスクを最後に移動
-let participantId = null; // Global variable to store the ID
+let participantId = null; // Global variable to cache the ID
 
 const id_input = {
   type: jsPsychHtmlButtonResponse,
@@ -38,18 +38,27 @@ const id_input = {
     <p id="error_message" style="color: red; display: none;">IDは半角数字で入力してください。</p>
   `,
   choices: ["送信"],
+  on_start: function () {
+    console.log("Rendering the input screen...");
+  },
   on_finish: function (data) {
-    const inputValue = jsPsych.getDisplayElement().querySelector("#participant_id")?.value.trim();
-    if (inputValue && /^[0-9]+$/.test(inputValue)) {
-      participantId = inputValue; // Cache the valid ID in the global variable
-      data.participant_id = inputValue; // Also store in jsPsych data
-      console.log("Valid ID entered:", inputValue);
-    } else {
-      data.participant_id = null;
-      console.error("Invalid or missing ID entered.");
-    }
+    setTimeout(() => {
+      // Ensure the DOM is ready before querying the input element
+      const inputElement = jsPsych.getDisplayElement().querySelector("#participant_id");
+      const inputValue = inputElement?.value.trim();
+
+      if (inputValue && /^[0-9]+$/.test(inputValue)) {
+        participantId = inputValue; // Cache the valid ID
+        data.participant_id = inputValue; // Save it in jsPsych data
+        console.log("Valid ID entered:", inputValue);
+      } else {
+        data.participant_id = null; // Mark as invalid
+        console.error("Invalid or missing ID entered.");
+      }
+    }, 100); // Small delay to ensure the DOM has updated
   },
 };
+
 
 // Later in the experiment, you can use `participantId` where needed
   
