@@ -74,34 +74,44 @@
     ];
 
     const selection_screen = {
-      type: jsPsychHtmlButtonResponse,
-      stimulus: `
-        <h1>選択肢を選んでください</h1>
-        <p>「A」「B」「C」の中から1つだけ選択してください。</p>
-      `,
-      choices: choices.map(choice => choice.label), // ボタンのラベル
-      button_html: `<button class="choice-button" style="font-size: 18px; margin: 5px;">%choice%</button>`,
-      on_finish: function (data) {
-        const selectedIndex = data.response; // ボタンのインデックス
-        const selectedChoice = choices[selectedIndex]; // 選択されたオプション
+  type: jsPsychHtmlButtonResponse,
+  stimulus: `
+    <h1>選択肢を選んでください</h1>
+    <p>「A」「B」「C」の中から1つだけ選択してください。</p>
+  `,
+  choices: choices.map(choice => choice.label), // ボタンのラベル
+  button_html: `<button class="choice-button" style="font-size: 18px; margin: 5px;">%choice%</button>`,
+  on_finish: function (data) {
+    const selectedIndex = data.response; // ボタンのインデックス
+    const selectedChoice = choices[selectedIndex]; // 選択されたオプション
 
-        if (selectedChoice) {
-          // 選択された値をデータプロパティに保存
-          jsPsych.data.addProperties({
-            selected_choice_label: selectedChoice.label,
-            selected_choice_value: selectedChoice.value
-          });
-
-          console.log(`選択された値: ${selectedChoice.label} (${selectedChoice.value})`);
-        } else {
-          // 選択がされていない場合
-          console.error("選択肢が選ばれていません");
-        }
-      }
-    };
-
-    // タイムラインに追加
+    if (selectedChoice) {
+      // 選択された値をデータプロパティに保存
+      jsPsych.data.addProperties({
+        selected_choice_label: selectedChoice.label,
+        selected_choice_value: selectedChoice.value
+      });
+      console.log(`選択された値: ${selectedChoice.label} (${selectedChoice.value})`);
+    } else {
+      // 選択がされていない場合
+      console.error("選択肢が選ばれていません");
+    }
+  },
+  // 自動で選択されないように、クリック前に進まないように
+  on_load: function() {
+    const buttons = document.querySelectorAll(".choice-button");
+    buttons.forEach((button, index) => {
+      button.addEventListener("click", () => {
+        jsPsych.pluginAPI.setProgressBar((index + 1) / buttons.length); // 進捗バーを更新（必要であれば）
+        jsPsych.finishTrial(); // ボタンがクリックされたら次に進む
+      });
+    });
+  }
+};
+       // タイムラインに追加
     timeline.push(selection_screen);
+    
+
     // ウェルカム画面と説明画面
     const welcome = {
       type: jsPsychHtmlButtonResponse,
