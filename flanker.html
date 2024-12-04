@@ -25,6 +25,36 @@
 
     let timeline = [];
 
+    
+// ID入力タスクを最後に移動
+let participantId = null; // Global variable to store the ID
+
+const id_input = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus: `
+    <h1>実験ID入力</h1>
+    <p>実験を終える前に、以下の入力欄に半角数字でIDを入力してください。</p>
+    <input type="text" id="participant_id" placeholder="IDを入力" style="font-size: 18px; padding: 5px; width: 50%; margin-bottom: 10px;">
+    <p id="error_message" style="color: red; display: none;">IDは半角数字で入力してください。</p>
+  `,
+  choices: ["送信"],
+  on_finish: function (data) {
+    const inputValue = jsPsych.getDisplayElement().querySelector("#participant_id")?.value.trim();
+    if (inputValue && /^[0-9]+$/.test(inputValue)) {
+      participantId = inputValue; // Cache the valid ID in the global variable
+      data.participant_id = inputValue; // Also store in jsPsych data
+      console.log("Valid ID entered:", inputValue);
+    } else {
+      data.participant_id = null;
+      console.error("Invalid or missing ID entered.");
+    }
+  },
+};
+
+// Later in the experiment, you can use `participantId` where needed
+  
+timeline.push(id_input);
+
     const enter_fullscreen = {
       type: jsPsychFullscreen,
       fullscreen_mode: true,
@@ -142,33 +172,6 @@ timeline.push(flanker);
       }
     };
     timeline.push(debrief_block);
-
-// ID入力タスクを最後に移動
-const id_input = {
-  type: jsPsychHtmlButtonResponse,
-  stimulus: `
-    <h1>実験ID入力</h1>
-    <p>実験を終える前に、以下の入力欄に半角数字でIDを入力してください。</p>
-    <input type="text" id="participant_id" placeholder="IDを入力" style="font-size: 18px; padding: 5px; width: 50%; margin-bottom: 10px;">
-    <p id="error_message" style="color: red; display: none;">IDは半角数字で入力してください。</p>
-  `,
-  choices: ["送信"],
-  on_finish: function (data) {
-    // Retrieve the value of the input field during the trial
-    const inputValue = jsPsych.getDisplayElement().querySelector("#participant_id")?.value.trim();
-
-    if (inputValue && /^[0-9]+$/.test(inputValue)) {
-      data.participant_id = inputValue; // Save the valid ID
-      console.log("Valid ID entered:", inputValue);
-    } else {
-      data.participant_id = null; // Null for invalid or empty input
-      console.error("Invalid or missing ID entered.");
-    }
-  },
-};
-
-  
-timeline.push(id_input);
 
 // 実験を実行
 jsPsych.run(timeline);
