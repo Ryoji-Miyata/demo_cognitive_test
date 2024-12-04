@@ -123,7 +123,6 @@
       post_trial_gap: interstimuli_interval.instructions
     };
     timeline.push(welcome, instructions, beginTask);
-
 // フランカー課題の生成
 const test_stimuli = [];
 for (let i = 0; i < 5; i++) {
@@ -138,11 +137,11 @@ function generateFlankerStimulus() {
     stimulus.push(symbols[Math.floor(Math.random() * symbols.length)]);
   }
 
-  // 中央のシンボルを数値に変換：＞ = 0, ＜ = 1
-  const correct_response = stimulus[2] === '＞' ? 0 : 1; // 中央の記号で正解を設定
+  // 中央のシンボルに基づいて正解を設定：＜→R, ＞→L
+  const correct_response = stimulus[2] === '＜' ? 'R' : 'L';
   return {
     stimulus: `<span class="text">${stimulus.join('')}</span>`,
-    correct_response: correct_response
+    correct_response: correct_response // 'R' または 'L'
   };
 }
 
@@ -166,12 +165,20 @@ const test = {
   `,
   data: {
     task: 'response',
-    correct_response: jsPsych.timelineVariable('correct_response') // 正解のインデックスを取得
+    correct_response: jsPsych.timelineVariable('correct_response') // 'R' または 'L'
   },
   on_finish: function(data) {
-    // ユーザーのレスポンス（インデックス番号）を取得
-    const response = data.response; // 左ボタン: 0, 右ボタン: 1
-    data.correct = (response === data.correct_response); // 中央の記号との一致を判定
+    // ユーザーのレスポンス（インデックス番号）を文字に変換：左ボタン = 'l', 右ボタン = 'r'
+    const response = data.response === 0 ? 'l' : 'r'; // 左: 'l', 右: 'r'
+
+    // 中央の記号とボタン入力が一致しているかを判定
+    // 真ん中が '＜' (R): 右ボタン ('r') → true, 左ボタン ('l') → false
+    // 真ん中が '＞' (L): 左ボタン ('l') → true, 右ボタン ('r') → false
+    if (data.correct_response === 'R') {
+      data.correct = (response === 'r');
+    } else if (data.correct_response === 'L') {
+      data.correct = (response === 'l');
+    }
   }
 };
 
