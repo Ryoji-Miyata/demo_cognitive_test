@@ -26,33 +26,45 @@
     let timeline = [];
 
     // ID入力画面
-    const id_input = {
-      type: jsPsychHtmlButtonResponse,
-      stimulus: `
-        <h1>実験ID入力</h1>
-        <p>実験を終える前に、以下の入力欄にIDを入力してください。</p>
-        <input type="text" id="participant_id"　inputmode="numeric" placeholder="IDを入力" style="font-size: 18px; padding: 5px; width: 50%; margin-bottom: 10px;">
-        <p id="error_message" style="color: red; display: none;">IDは数字で入力してください。</p>
-      `,
-      choices: ["送信"],
-      on_finish: function (data) {
-        const inputElement = jsPsych.getDisplayElement().querySelector("#participant_id");
-        const inputValue = inputElement ? inputElement.value.trim() : "";
+const id_input = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus: `
+    <h1>実験ID入力</h1>
+    <p>実験を始める前に、以下の入力欄に半角数字でIDを入力してください。</p>
+    <input type="text" id="participant_id" inputmode="numeric" pattern="[0-9]*" placeholder="IDを入力" style="font-size: 18px; padding: 5px; width: 50%; margin-bottom: 10px;">
+    <p id="error_message" style="color: red; display: none;">IDは半角数字で入力してください。</p>
+  `,
+  choices: ["送信"],
+  button_html: `<button style="font-size: 18px;">%choice%</button>`,
+  on_finish: function (data) {
+    const inputElement = document.getElementById("participant_id");
+    const inputValue = inputElement ? inputElement.value.trim() : "";
 
-        // 数字（全角または半角）の入力チェック
-        if (inputValue && !isNaN(inputValue)) {
-          data.participant_id = inputValue; // 有効なIDを保存
-          console.log("Valid ID entered:", inputValue);
-        } else {
-          data.participant_id = null;
-          const errorMessage = document.getElementById("error_message");
-          if (errorMessage) {
-            errorMessage.style.display = "block"; // エラーメッセージを表示
-          }
-          console.error("Invalid or missing ID entered.");
-        }
+    // 半角数字のみを許可
+    if (/^[0-9]+$/.test(inputValue)) {
+      data.participant_id = inputValue; // 有効なIDを保存
+      console.log("Valid ID entered:", inputValue);
+    } else {
+      data.participant_id = null;
+      console.error("Invalid or missing ID entered.");
+    }
+  },
+  on_load: function () {
+    const button = document.querySelector("button");
+    button.addEventListener("click", function () {
+      const inputElement = document.getElementById("participant_id");
+      const inputValue = inputElement ? inputElement.value.trim() : "";
+      const errorMessage = document.getElementById("error_message");
+
+      // 半角数字の入力チェック
+      if (/^[0-9]+$/.test(inputValue)) {
+        jsPsych.finishTrial(); // 入力が正しい場合、次へ進む
+      } else {
+        errorMessage.style.display = "block"; // エラーメッセージを表示
       }
-    };
+    });
+  }
+};
 
     timeline.push(id_input);
 
