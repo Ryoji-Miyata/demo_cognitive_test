@@ -40,14 +40,21 @@ const id_input = {
   choices: ["送信"],
   on_finish: function (data) {
     const inputValue = jsPsych.getDisplayElement().querySelector("#participant_id")?.value.trim();
-    if (inputValue && /^[0-9]+$/.test(inputValue)) {
-      participantId = inputValue; // Cache the valid ID in the global variable
-      data.participant_id = inputValue; // Also store in jsPsych data
-      console.log("Valid ID entered:", inputValue);
-    } else {
-      data.participant_id = null;
-      console.error("Invalid or missing ID entered.");
-    }
+   const inputValue = idInput.value.trim(); // Retrieve and trim the input value
+      console.log("Retrieved input value:", inputValue);
+
+      if (inputValue && /^[0-9]+$/.test(inputValue)) {
+        participantId = inputValue; // Cache the valid ID in the global variable
+        data.participant_id = inputValue; // Store in jsPsych data
+        console.log("Valid ID entered:", inputValue);
+      } else {
+        data.participant_id = null; // Set to null for invalid inputs
+        console.error("Invalid ID entered:", inputValue);
+        // Optionally, show an error message to the user
+        idInput.insertAdjacentHTML(
+          'afterend',
+          '<p style="color: red;">入力が無効です。半角数字のみ入力してください。</p>'
+        );
   },
 };
 
