@@ -161,29 +161,28 @@ const test = {
   stimulus: jsPsych.timelineVariable('stimulus'),
   choices: ['左', '右'],
   button_html: `
-    <button style="position: absolute; left: 15%; bottom: 15%; font-size: 60px;">左</button>
-    <button style="position: absolute; right: 15%; bottom: 15%; font-size: 60px;">右</button>
+    <button style="position: absolute; left: 15%; bottom: 15%; font-size: 60px;" data-response="left">左</button>
+    <button style="position: absolute; right: 15%; bottom: 15%; font-size: 60px;" data-response="right">右</button>
   `,
   data: {
     task: 'response',
     correct_response: jsPsych.timelineVariable('correct_response') // 'R' または 'L'
   },
   on_finish: function(data) {
-    // クリックされたボタンのテキストを取得
-    const buttonClicked = document.querySelector('button[disabled="true"]');
-    const response = buttonClicked ? buttonClicked.innerText : null;
+    // クリックされたボタンのdata-response属性を取得
+    const buttonClicked = document.querySelector('button[disabled="true"]'); // クリックされたボタン
+    const response = buttonClicked ? buttonClicked.getAttribute('data-response') : null;
 
-    console.log("Clicked button text:", response);
+    console.log("Clicked button data-response value:", response);
 
     // 正解判定
     if (data.correct_response === 'R') {
-      data.correct = (response === '右');  // 中央が 'R' のとき、右ボタンが正解
+      data.correct = (response === 'right');  // 中央が 'R' のとき、右ボタンが正解
     } else if (data.correct_response === 'L') {
-      data.correct = (response === '左');  // 中央が 'L' のとき、左ボタンが正解
+      data.correct = (response === 'left');  // 中央が 'L' のとき、左ボタンが正解
     }
   }
 };
-
 
 // flanker課題をタイムラインに追加
 const flanker = {
