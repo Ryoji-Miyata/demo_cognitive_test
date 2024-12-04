@@ -65,6 +65,7 @@
     };
     timeline.push(id_input);
 
+   
     // 選択画面
     const choices = [
       { label: "起床時", value: 1 },
@@ -84,19 +85,23 @@
         const selectedIndex = data.response; // ボタンのインデックス
         const selectedChoice = choices[selectedIndex]; // 選択されたオプション
 
-        // 選択された値をデータプロパティに保存
-        jsPsych.data.addProperties({
-          selected_choice_label: selectedChoice.label,
-          selected_choice_value: selectedChoice.value
-        });
+        if (selectedChoice) {
+          // 選択された値をデータプロパティに保存
+          jsPsych.data.addProperties({
+            selected_choice_label: selectedChoice.label,
+            selected_choice_value: selectedChoice.value
+          });
 
-        console.log(`選択された値: ${selectedChoice.label} (${selectedChoice.value})`);
+          console.log(`選択された値: ${selectedChoice.label} (${selectedChoice.value})`);
+        } else {
+          // 選択がされていない場合
+          console.error("選択肢が選ばれていません");
+        }
       }
     };
 
     // タイムラインに追加
     timeline.push(selection_screen);
-
     // ウェルカム画面と説明画面
     const welcome = {
       type: jsPsychHtmlButtonResponse,
