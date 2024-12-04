@@ -65,6 +65,39 @@ const id_input = {
 };
     timeline.push(id_input);
 
+    //選択画面
+    const choices = [
+    { label: "起床時", value: 1 },
+    { label: "昼食後", value: 2 },
+    { label: "就寝前", value: 3 }
+  ];
+
+  const selection_screen = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: `
+      <h1>選択肢を選んでください</h1>
+      <p>「A」「B」「C」の中から1つだけ選択してください。</p>
+    `,
+    choices: choices.map(choice => choice.label), // ボタンのラベル
+    button_html: `
+      <button class="choice-button" style="font-size: 18px; margin: 5px;">%choice%</button>
+    `,
+    on_finish: function (data) {
+      const selectedIndex = data.response;
+      const selectedChoice = choices[selectedIndex];
+      // 選択された値をデータプロパティに保存
+      jsPsych.data.addProperties({
+        selected_choice_label: selectedChoice.label,
+        selected_choice_value: selectedChoice.value
+      });
+
+      console.log(`選択された値: ${selectedChoice.label} (${selectedChoice.value})`);
+    }
+  };
+
+  // タイムラインに追加
+  timeline.push(selection_screen);
+
     const welcome = {
       type: jsPsychHtmlButtonResponse,
       stimulus: lang.welcome,
