@@ -166,6 +166,7 @@ const id_input = {
   },
   on_finish: function (data) {
   const idInput = document.getElementById("participant_id");
+    console.log(idInput);
   if (idInput) { // 要素が存在するかチェック
     const id = idInput.value.trim();
     if (/^[0-9]+$/.test(id)) {
