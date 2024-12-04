@@ -139,7 +139,7 @@ function generateFlankerStimulus() {
   }
 
   // 中央のシンボルを数値に変換：＞ = 0, ＜ = 1
-  const correct_response = stimulus[2] === '＞' ? 0 : 1;
+  const correct_response = stimulus[2] === '＞' ? 0 : 1; // 中央の記号で正解を設定
   return {
     stimulus: `<span class="text">${stimulus.join('')}</span>`,
     correct_response: correct_response
@@ -170,8 +170,8 @@ const test = {
   },
   on_finish: function(data) {
     // ユーザーのレスポンス（インデックス番号）を取得
-    const response = data.response; // 左: 0, 右: 1
-    data.correct = (response === data.correct_response); // 正解との一致を判定
+    const response = data.response; // 左ボタン: 0, 右ボタン: 1
+    data.correct = (response === data.correct_response); // 中央の記号との一致を判定
   }
 };
 
