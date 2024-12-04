@@ -40,30 +40,20 @@ const id_input = {
   choices: ["送信"],
   on_finish: function (data) {
     const inputValue = jsPsych.getDisplayElement().querySelector("#participant_id")?.value.trim();
-    if (idInput) {
-        const inputValue = idInput.value.trim();
-        console.log("Input value before validation:", inputValue);
-
-        if (inputValue && /^[0-9]+$/.test(inputValue)) {
-          participantId = inputValue; // IDをグローバル変数にキャッシュ
-          data.participant_id = inputValue; // jsPsychのデータに保存
-          console.log("Valid ID entered:", inputValue);
-        } else {
-          data.participant_id = null; // 無効な場合
-          console.error("Invalid or missing ID entered.");
-        }
-      } else {
-        console.error("Input element not found in DOM!");
-        data.participant_id = null; // DOM要素が見つからない場合
-      }
+    if (inputValue && /^[0-9]+$/.test(inputValue)) {
+      participantId = inputValue; // Cache the valid ID in the global variable
+      data.participant_id = inputValue; // Also store in jsPsych data
+      console.log("Valid ID entered:", inputValue);
+    } else {
+      data.participant_id = null;
+      console.error("Invalid or missing ID entered.");
+    }
   },
 };
 
 // Later in the experiment, you can use `participantId` where needed
-
-
-// Adding the display of cached ID to the timeline
-timeline.push(participantId);
+  
+timeline.push(id_input);
 
     const enter_fullscreen = {
       type: jsPsychFullscreen,
