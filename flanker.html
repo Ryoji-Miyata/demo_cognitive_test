@@ -178,22 +178,31 @@ const test = {
       response = 'unknown'; // 念のため、不明なケースをキャッチ
     }
 
-    // 中央の記号とボタン入力が一致しているかを判定
+    // 判定ロジック：中央の記号とボタン入力が一致しているかをチェック
     if (data.correct_response === 'R') {
-      data.correct = (response === 'r'); // 中央が 'R' のとき、右ボタンが正解
+      if (response === 'r') {
+        data.correct = true; // 中央が 'R' のとき、右ボタンが正解
+        data.result = "正解 (R=r)";
+      } else {
+        data.correct = false; // 中央が 'R' のとき、左ボタンが不正解
+        data.result = "不正解 (R=l)";
+      }
     } else if (data.correct_response === 'L') {
-      data.correct = (response === 'l'); // 中央が 'L' のとき、左ボタンが正解
+      if (response === 'l') {
+        data.correct = true; // 中央が 'L' のとき、左ボタンが正解
+        data.result = "正解 (L=l)";
+      } else {
+        data.correct = false; // 中央が 'L' のとき、右ボタンが不正解
+        data.result = "不正解 (L=r)";
+      }
     }
 
     // デバッグ情報の出力
     console.log("Stimulus (中央の記号):", data.stimulus); // 表示された不等号列
     console.log("Correct Response (正解):", data.correct_response); // 正解 ('R' or 'L')
     console.log("User Response Index (ボタンインデックス):", data.response); // ボタンインデックス (0 or 1)
-    console.log("User Response (入力):", response); // ユーザーの入力 ('l' or 'r')
-    console.log("Correct (正解判定):", data.correct); // 判定結果 (true or false)
-  }
-};
-
+    console
+  };
     
 // flanker課題をタイムラインに追加
 const flanker = {
