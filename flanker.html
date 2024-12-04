@@ -89,7 +89,7 @@ const id_input = {
     timeline.push(welcome, instructions, beginTask);
 
    const test_stimuli = [];
-for (let i = 0; i < 10; i++) {
+for (let i = 0; i < 3; i++) {
   test_stimuli.push(generateFlankerStimulus());  // 10問分のフランカー刺激を生成
 }
 
@@ -181,34 +181,34 @@ timeline.push(flanker);
     jsPsych.run(timeline);
 
     // データをサーバに送信する関数
-    function sendDataToServer(csvData) {
-      const participantId = jsPsych.data.get().last(1).values()[0].participant_id || "no_id"; 
-      const now = new Date();
-      const timestamp = `${now.getFullYear()}_${(now.getMonth() + 1).toString().padStart(2, '0')}_${now.getDate().toString().padStart(2, '0')}_${now.getHours().toString().padStart(2, '0')}_${now.getMinutes().toString().padStart(2, '0')}_${now.getSeconds().toString().padStart(2, '0')}`;
-      const filename = `flanker1_${participantId}_${timestamp}.csv`;
+function sendDataToServer(csvData) {
+  const participantId = jsPsych.data.get().last(1).values()[0].participant_id || "no_id"; 
+  const now = new Date();
+  const timestamp = `${now.getFullYear()}_${(now.getMonth() + 1).toString().padStart(2, '0')}_${now.getDate().toString().padStart(2, '0')}_${now.getHours().toString().padStart(2, '0')}_${now.getMinutes().toString().padStart(2, '0')}_${now.getSeconds().toString().padStart(2, '0')}`;
+  const filename = `flanker1_${participantId}_${timestamp}.csv`;
 
-      fetch("https://pipe.jspsych.org/api/data/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "*/*",
-        },
-        body: JSON.stringify({
-          experimentID: "nTfNs3BeCPOK",
-          filename: filename,
-          data: csvData
-        }),
-      })
-      .then(response => {
-        if (response.ok) {
-          console.log('データが正常に保存されました');
-        } else {
-          console.error('データの保存中にエラーが発生しました');
-        }
-      })
-      .catch(error => {
-        console.error('通信エラーが発生しました:', error);
-      });
+  fetch("https://pipe.jspsych.org/api/data/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "*/*",
+    },
+    body: JSON.stringify({
+      experimentID: "nTfNs3BeCPOK",
+      filename: filename,
+      data: csvData
+    }),
+  })
+  .then(response => {
+    if (response.ok) {
+      console.log(`データが正常に保存されました。ファイル名: ${filename}`);
+    } else {
+      console.error('データの保存中にエラーが発生しました');
     }
+  })
+  .catch(error => {
+    console.error('通信エラーが発生しました:', error);
+  });
+}
   </script>
 </html>
