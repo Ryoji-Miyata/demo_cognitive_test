@@ -26,7 +26,7 @@
     let timeline = [];
 
     // ID入力画面
-    const id_input = {
+   const id_input = {
   type: jsPsychHtmlButtonResponse,
   stimulus: `
     <h1>実験ID入力</h1>
@@ -37,15 +37,20 @@
   choices: ["送信"],
   on_finish: function (data) {
     const inputElement = jsPsych.getDisplayElement().querySelector("#participant_id");
-    const inputValue = inputElement ? inputElement.value.trim() : "";
+    if (inputElement) {
+      const inputValue = inputElement.value.trim();
 
-    // 半角数字のチェック
-    if (inputValue && /^[0-9]+$/.test(inputValue)) {
-      data.participant_id = inputValue; // 有効なIDを保存
-      console.log("Valid ID entered:", inputValue);
+      // 半角数字のチェック
+      if (inputValue && /^[0-9]+$/.test(inputValue)) {
+        data.participant_id = inputValue; // 有効なIDを保存
+        console.log("Valid ID entered:", inputValue);
+      } else {
+        data.participant_id = null;
+        console.error("Invalid or missing ID entered.");
+      }
     } else {
       data.participant_id = null;
-      console.error("Invalid or missing ID entered.");
+      console.error("Participant ID input element not found.");
     }
   }
 };
