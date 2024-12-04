@@ -151,26 +151,31 @@ const id_input = {
     <p>実験を終える前に、以下の入力欄に半角数字でIDを入力してください。</p>
     <input type="text" id="participant_id" placeholder="IDを入力" style="font-size: 18px; padding: 5px; width: 50%; margin-bottom: 10px;">
     <p id="error_message" style="color: red; display: none;">IDは半角数字で入力してください。</p>
+    <script>
+      console.log('Participant ID input field rendered.');
+    </script>
   `,
   choices: ["送信"],
   on_start: function() {
-    console.log("Rendering ID input screen"); // レンダリング確認用
+    console.log("Starting ID input screen...");
   },
   on_finish: function (data) {
-    const idInput = document.getElementById("participant_id");
-    if (idInput) {
-      const id = idInput.value.trim();
-      if (/^[0-9]+$/.test(id)) {
-        data.participant_id = id; // 有効なIDを保存
-        console.log("Valid ID entered:", id);
+    setTimeout(() => { // 遅延チェックで要素が確実に生成されるようにする
+      const idInput = document.getElementById("participant_id");
+      if (idInput) {
+        const id = idInput.value.trim();
+        if (/^[0-9]+$/.test(id)) {
+          data.participant_id = id; // 有効なIDを保存
+          console.log("Valid ID entered:", id);
+        } else {
+          data.participant_id = null; // 無効なIDはnull
+          console.log("Invalid ID entered");
+        }
       } else {
-        data.participant_id = null; // 無効なIDはnull
-        console.log("Invalid ID entered");
+        console.error("Input element with ID 'participant_id' not found!");
+        data.participant_id = null; // 安全策としてnullを設定
       }
-    } else {
-      console.error("Input element with ID 'participant_id' not found!");
-      data.participant_id = null; // 安全策としてnullを設定
-    }
+    }, 100); // 100ms遅らせて要素を確認
   },
 };
 timeline.push(id_input);
