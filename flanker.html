@@ -143,68 +143,14 @@ timeline.push(flanker);
     };
     timeline.push(debrief_block);
 
-// ID入力タスクを最後に移動
-const id_input = {
-  type: jsPsychHtmlButtonResponse,
-  stimulus: `
-    <h1>実験ID入力</h1>
-    <p>実験を終える前に、以下の入力欄に半角数字でIDを入力してください。</p>
-    <input type="text" id="participant_id" placeholder="IDを入力" style="font-size: 18px; padding: 5px; width: 50%; margin-bottom: 10px;">
-    <p id="error_message" style="color: red; display: none;">IDは半角数字で入力してください。</p>
-  `,
-  choices: ["送信"],
-  on_start: function () {
-    // エラー表示を初期化
-    const error_message = document.getElementById("error_message");
-    const button = document.querySelector('button');
-    if (error_message) {
-      error_message.style.display = "none";
-    }
-    if (button) {
-      button.disabled = false; // ボタンを有効にしておく
-    }
-  },
-  on_finish: function (data) {
-    const id = document.getElementById("participant_id").value.trim();
-    const error_message = document.getElementById("error_message");
-    const button = document.querySelector('button');
-    if (/^[0-9]+$/.test(id)) {
-      data.participant_id = id; // 有効なIDを保存
-      button.disabled = false; // 有効なIDならボタンを有効
-    } else {
-      data.participant_id = null; // 無効なIDはnull
-      // エラー表示
-      if (error_message) {
-        error_message.style.display = "block";
-      }
-      button.disabled = true; // 無効なIDならボタンを無効
-    }
-  },
-};
-
-// ID入力の再試行ループを追加
-timeline.push({
-  timeline: [id_input],
-  loop_function: function (data) {
-    const last_trial = jsPsych.data.get().last(1).values()[0]; // 最後の試行データを取得
-    if (!last_trial.participant_id) {
-      // 無効なIDの場合、再試行を促す
-      return true; // 再試行
-    }
-    return false; // 正常なIDの場合は次に進む
-  },
-});
-
+    
 // 実験を実行
 jsPsych.run(timeline);
 
-    // データをサーバに送信する関数
+     // データをサーバに送信する関数
 function sendDataToServer(csvData) {
-  const participantId = jsPsych.data.get().last(1).values()[0].participant_id || "no_id"; // 最後の試行からIDを取得、IDがない場合は"no_id"とする
   const now = new Date();
-  const timestamp = `${now.getFullYear()}_${(now.getMonth() + 1).toString().padStart(2, '0')}_${now.getDate().toString().padStart(2, '0')}_${now.getHours().toString().padStart(2, '0')}_${now.getMinutes().toString().padStart(2, '0')}_${now.getSeconds().toString().padStart(2, '0')}`;
-
-  const filename = `flanker1_${participantId}_${timestamp}.csv`; // ファイル名にIDとタイムスタンプを追加
+  const filename = experiment_${now.getFullYear()}_${now.getMonth() + 1}_${now.getDate()}_${now.getHours()}_${now.getMinutes()}_${now.getSeconds()}.csv;
 
   fetch("https://pipe.jspsych.org/api/data/", {
     method: "POST",
@@ -229,6 +175,5 @@ function sendDataToServer(csvData) {
     console.error('通信エラーが発生しました:', error);
   });
 }
-
   </script>
 </html>
