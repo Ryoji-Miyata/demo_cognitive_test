@@ -154,7 +154,7 @@ const fixation = {
     task: 'fixation'
   }
 };
-
+    
 const test = {
   type: jsPsychHtmlButtonResponse,
   stimulus: jsPsych.timelineVariable('stimulus'),
@@ -172,15 +172,20 @@ const test = {
     const response = data.response === 0 ? 'l' : 'r'; // 左: 'l', 右: 'r'
 
     // 中央の記号とボタン入力が一致しているかを判定
-    // 真ん中が '＜' (R): 右ボタン ('r') → true, 左ボタン ('l') → false
-    // 真ん中が '＞' (L): 左ボタン ('l') → true, 右ボタン ('r') → false
     if (data.correct_response === 'R') {
       data.correct = (response === 'r');
     } else if (data.correct_response === 'L') {
       data.correct = (response === 'l');
     }
+
+    // デバッグ情報の出力
+    console.log("Stimulus (中央の記号):", data.stimulus); // 表示された不等号列
+    console.log("Correct Response (正解):", data.correct_response); // 正解 ('R' or 'L')
+    console.log("User Response (入力):", response); // ユーザーの入力 ('l' or 'r')
+    console.log("Correct (正解判定):", data.correct); // 判定結果 (true or false)
   }
 };
+
 
 // flanker課題をタイムラインに追加
 const flanker = {
