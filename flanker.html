@@ -27,8 +27,7 @@
 
     
 // ID入力タスクを最後に移動
-// Global variable to cache the participant ID
-let cachedParticipantId = null;
+let participantId = null; // Global variable to store the ID
 
 const id_input = {
   type: jsPsychHtmlButtonResponse,
@@ -40,46 +39,31 @@ const id_input = {
   `,
   choices: ["送信"],
   on_finish: function (data) {
-    setTimeout(() => {
-      const idInput = document.getElementById("participant_id");
-      if (idInput) {
+    const inputValue = jsPsych.getDisplayElement().querySelector("#participant_id")?.value.trim();
+    if (idInput) {
         const inputValue = idInput.value.trim();
         console.log("Input value before validation:", inputValue);
 
         if (inputValue && /^[0-9]+$/.test(inputValue)) {
-          // Cache the ID in the global variable
-          cachedParticipantId = inputValue;
-          data.participant_id = inputValue; // Save in jsPsych data
-          console.log("Valid ID entered and cached:", inputValue);
+          participantId = inputValue; // IDをグローバル変数にキャッシュ
+          data.participant_id = inputValue; // jsPsychのデータに保存
+          console.log("Valid ID entered:", inputValue);
         } else {
-          data.participant_id = null; // Invalid ID
+          data.participant_id = null; // 無効な場合
           console.error("Invalid or missing ID entered.");
-          cachedParticipantId = null; // Reset cache on invalid input
         }
       } else {
         console.error("Input element not found in DOM!");
-        data.participant_id = null; // Handle case where input is missing
-        cachedParticipantId = null; // Reset cache
+        data.participant_id = null; // DOM要素が見つからない場合
       }
-    }, 100); // Add delay to ensure DOM element is fully rendered
   },
 };
 
-// Example usage of the cached ID later in the experiment
-const displayCachedId = {
-  type: jsPsychHtmlButtonResponse,
-  stimulus: function () {
-    if (cachedParticipantId) {
-      return `<h2>Cached ID: ${cachedParticipantId}</h2><p>続けるには「次へ」をクリックしてください。</p>`;
-    } else {
-      return `<h2>エラー: IDがキャッシュされていません。</h2><p>最初にIDを入力してください。</p>`;
-    }
-  },
-  choices: ["次へ"],
-};
+// Later in the experiment, you can use `participantId` where needed
+
 
 // Adding the display of cached ID to the timeline
-timeline.push(displayCachedId);
+timeline.push(participantId);
 
     const enter_fullscreen = {
       type: jsPsychFullscreen,
