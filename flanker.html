@@ -36,14 +36,14 @@ const id_input = {
   `,
   choices: ["送信"],
   button_html: `<button style="font-size: 18px;">%choice%</button>`,
-  on_finish: function (data) {
+  on_finish: function () {
     const inputElement = document.getElementById("participant_id");
     const inputValue = inputElement ? inputElement.value.trim() : "";
 
     if (/^[0-9]+$/.test(inputValue)) {
       // IDをグローバルに保存
       jsPsych.data.addProperties({ participant_id: inputValue });
-      console.log("Valid ID entered:", inputValue);
+      console.log("ID saved:", inputValue);
     } else {
       console.error("Invalid or missing ID entered.");
     }
@@ -177,13 +177,15 @@ timeline.push(flanker);
     // 実験を実行
     jsPsych.run(timeline);
 
-    // データをサーバに送信する関数
+ // データをサーバに送信する関数
 function sendDataToServer(csvData) {
   // グローバルに保存されたparticipant_idを取得
-  const participantId = jsPsych.data.get().values()[0].participant_id || "no_id"; 
+  const participantId = jsPsych.data.get().last(1).values()[0].participant_id || "no_id"; 
   const now = new Date();
   const timestamp = `${now.getFullYear()}_${(now.getMonth() + 1).toString().padStart(2, '0')}_${now.getDate().toString().padStart(2, '0')}_${now.getHours().toString().padStart(2, '0')}_${now.getMinutes().toString().padStart(2, '0')}_${now.getSeconds().toString().padStart(2, '0')}`;
   const filename = `flanker1_${participantId}_${timestamp}.csv`;
+
+  console.log("Generated filename:", filename); // ファイル名確認用
 
   fetch("https://pipe.jspsych.org/api/data/", {
     method: "POST",
