@@ -124,7 +124,7 @@
     };
     timeline.push(welcome, instructions, beginTask);
 
-   // フランカー課題の生成
+// フランカー課題の生成
 const test_stimuli = [];
 for (let i = 0; i < 5; i++) {
   test_stimuli.push(generateFlankerStimulus());  // 5問分のフランカー刺激を生成
@@ -169,8 +169,8 @@ const test = {
     correct_response: jsPsych.timelineVariable('correct_response')  // 正解のインデックスを取得
   },
   on_finish: function(data) {
-    // ユーザーのレスポンスを0か1に変換して比較
-    const response = data.response === 0 ? 0 : 1;  // 「左」→0、「右」→1に変換
+    // ユーザーのレスポンス（インデックス番号）を取得
+    const response = data.response;  // 0 または 1 のインデックスが返される
     data.correct = (response === data.correct_response);  // 正解との一致を判定
   }
 };
@@ -184,6 +184,7 @@ const flanker = {
 };
 
 timeline.push(flanker);
+
 
     const end = {
       type: jsPsychHtmlButtonResponse,
