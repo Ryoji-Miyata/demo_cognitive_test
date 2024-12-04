@@ -139,7 +139,8 @@ function generateFlankerStimulus() {
   }
 
   // 正解のレスポンスをインデックスで決定
-  const correct_response = stimulus[2] === '＞' ? 0 : 1;  // 0: 左, 1: 右
+  // 正解は中央のシンボルが「＞」なら右（1）、それ以外なら左（0）
+  const correct_response = stimulus[2] === '＞' ? 1 : 0;  // 1: 右, 0: 左
   return {
     stimulus: `<span class="text">${stimulus.join('')}</span>`,
     correct_response: correct_response
