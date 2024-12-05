@@ -160,7 +160,7 @@ const test = {
   stimulus: jsPsych.timelineVariable('stimulus'),
   choices: ['左', '右'], // 左ボタンが0、右ボタンが1となる
   button_html: `
-    <button style="display: inline-block; margin: 10px; font-size: 60px;">%choice%</button>
+    <button style="display: inline-block; margin: 30px; font-size: 50px;">%choice%</button>
   `,
   data: {
     task: 'response',
@@ -183,24 +183,36 @@ const test = {
     buttons.style.display = 'flex';
     buttons.style.justifyContent = 'center';
     buttons.style.marginTop = '10px'; // 上部の間隔を調整
+
+    console.log("Stimulus and buttons loaded and styled.");
   },
   on_finish: function(data) {
+    // Raw response value
     console.log("Raw data.response value (button index):", data.response);
 
-    // ボタンのインデックスをレスポンスに変換（左は'left'、右は'right'）
-    const response = data.response === 0 ? 'left' : 'right'; // 0: 左, 1: 右
+    // ボタンのインデックスをレスポンスに変換（左は 'left'、右は 'right'）
+    const response = data.response === 0 ? 'left' : 'right';
     console.log("Transformed response value:", response);
+
+    // 正解のレスポンス
+    console.log("Correct response from data.correct_response:", data.correct_response);
 
     // 正解判定
     if (data.correct_response === 'R') {
       // 中央が 'R' のとき、右ボタンが正解
       data.correct = (response === 'right');
+      console.log("Expected 'right', user response:", response, "Correct:", data.correct);
     } else if (data.correct_response === 'L') {
       // 中央が 'L' のとき、左ボタンが正解
       data.correct = (response === 'left');
+      console.log("Expected 'left', user response:", response, "Correct:", data.correct);
     }
+
+    // Debug: 最終データ出力
+    console.log("Final trial data:", data);
   }
 };
+
 
 
 // flanker課題をタイムラインに追加
