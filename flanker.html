@@ -160,45 +160,39 @@ const test = {
   stimulus: jsPsych.timelineVariable('stimulus'),
   choices: ['左', '右'], // 左ボタンが0、右ボタンが1となる
   button_html: `
-    <button style="display: inline-block; margin: 10px; font-size: 40px;">%choice%</button>
+    <div style="text-align: center;">
+      <button style="margin: 10px; font-size: 60px;">左</button>
+      <button style="margin: 10px; font-size: 60px;">右</button>
+    </div>
   `,
   data: {
     task: 'response',
     correct_response: jsPsych.timelineVariable('correct_response') // 'R' または 'L'
   },
-  on_load: function() {
-    // ボタン全体の位置を調整
-    const container = document.querySelector('.jspsych-content-wrapper');
-    container.style.display = 'flex';
-    container.style.flexDirection = 'column';
-    container.style.alignItems = 'center';
-    container.style.justifyContent = 'center';
-
-    // 不等号（刺激）を中央に配置
-    const stimulus = document.querySelector('.jspsych-html-button-response-stimulus');
-    stimulus.style.marginBottom = '20px'; // ボタンとの間隔を調整
-
-    // ボタンの配置を中央揃えに
-    const buttons = document.querySelector('.jspsych-html-button-response-button-box');
-    buttons.style.display = 'flex';
-    buttons.style.justifyContent = 'center';
-    buttons.style.marginTop = '10px'; // 上部の間隔を調整
-  },
   on_finish: function(data) {
-    console.log("Raw data.response value (button index):", data.response);
+    console.log("=== デバッグ情報 ===");
+    console.log("Raw data.response value (ボタンインデックス):", data.response);
 
-    // ボタンのインデックスをレスポンスに変換（左は'left'、右は'right'）
-    const response = data.response === 0 ? 'left' : 'right'; // 0: 左, 1: 右
-    console.log("Transformed response value:", response);
+    // ボタンインデックスを変換: 左が0（'l'）、右が1（'r'）
+    const response = data.response === 0 ? 'l' : 'r';
+    console.log("Transformed response value (ボタンレスポンス):", response);
+
+    console.log("Correct response expected (正解):", data.correct_response);
 
     // 正解判定
     if (data.correct_response === 'R') {
-      // 中央が 'R' のとき、右ボタンが正解
-      data.correct = (response === 'right');
+      data.correct = (response === 'r');
+      console.log("Judgment for 'R':", data.correct);
     } else if (data.correct_response === 'L') {
-      // 中央が 'L' のとき、左ボタンが正解
-      data.correct = (response === 'left');
+      data.correct = (response === 'l');
+      console.log("Judgment for 'L':", data.correct);
+    } else {
+      console.error("Unexpected correct_response value:", data.correct_response);
     }
+  },
+  on_load: function() {
+    console.log("=== フランカー試験画面が読み込まれました ===");
+    console.log("Stimulus shown to participant:", jsPsych.timelineVariable('stimulus'));
   }
 };
 
