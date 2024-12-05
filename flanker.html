@@ -166,36 +166,37 @@ const test = {
     task: 'response',
     correct_response: jsPsych.timelineVariable('correct_response') // 'R' または 'L'
   },
-  on_load: function() {
-    // ボタン全体の位置を調整
-    const container = document.querySelector('.jspsych-content-wrapper');
-    if (container) {
-      container.style.display = 'flex';
-      container.style.flexDirection = 'column';
-      container.style.alignItems = 'center';
-      container.style.justifyContent = 'center';
-    } else {
-      console.warn("Container element (.jspsych-content-wrapper) not found.");
-    }
+ on_load: function() {
+  // ボタン全体の位置を調整
+  const container = document.querySelector('.jspsych-content-wrapper');
+  if (container) {
+    container.style.display = 'flex';
+    container.style.flexDirection = 'column';
+    container.style.alignItems = 'center';
+    container.style.justifyContent = 'center';
+  } else {
+    console.warn("Container element (.jspsych-content-wrapper) not found.");
+  }
 
-    // 不等号（刺激）を中央に配置
-    const stimulus = document.querySelector('.jspsych-html-button-response-stimulus');
-    if (stimulus) {
-      stimulus.style.marginBottom = '20px'; // ボタンとの間隔を調整
-    } else {
-      console.warn("Stimulus element (.jspsych-html-button-response-stimulus) not found.");
-    }
+  // 不等号（刺激）を中央に配置
+  const stimulus = document.querySelector('.jspsych-html-button-response-stimulus');
+  if (stimulus) {
+    stimulus.style.marginBottom = '60px'; // 不等号とボタンの間隔を設定
+  } else {
+    console.warn("Stimulus element (.jspsych-html-button-response-stimulus) not found.");
+  }
 
-    // ボタンの配置を中央揃えに
-    const buttons = document.querySelector('.jspsych-html-button-response-button-box');
-    if (buttons) {
-      buttons.style.display = 'flex';
-      buttons.style.justifyContent = 'center';
-      buttons.style.marginTop = '10px'; // 上部の間隔を調整
-    } else {
-      console.warn("Buttons container (.jspsych-html-button-response-button-box) not found.");
-    }
-  },
+  // ボタンの配置を中央揃えに
+  const buttons = document.querySelector('.jspsych-html-button-response-button-box');
+  if (buttons) {
+    buttons.style.display = 'flex';
+    buttons.style.justifyContent = 'center';
+    buttons.style.marginTop = '10px'; // 上部の間隔を調整
+    buttons.style.gap = '60px'; // ボタン間の間隔を調整
+  } else {
+    console.warn("Buttons container (.jspsych-html-button-response-button-box) not found.");
+  }
+}
   on_finish: function(data) {
     console.log("Raw data.response value (button index):", data.response);
 
