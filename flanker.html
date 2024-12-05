@@ -160,8 +160,8 @@ const test = {
   stimulus: jsPsych.timelineVariable('stimulus'),
   choices: ['左', '右'], // 左ボタンが0、右ボタンが1となる
   button_html: `
-    <button style="display: inline-block; margin: 10px; font-size: 60px;">%choice%</button>
-  `,
+    <button style="display: inline-block; margin: 0 20px; font-size: 60px;">%choice%</button>
+  `, // margin: 0 20px; で左右の間隔を設定
   data: {
     task: 'response',
     correct_response: jsPsych.timelineVariable('correct_response') // 'R' または 'L'
@@ -181,7 +181,7 @@ const test = {
     // 不等号（刺激）を中央に配置
     const stimulus = document.querySelector('.jspsych-html-button-response-stimulus');
     if (stimulus) {
-      stimulus.style.marginBottom = '20px'; // ボタンとの間隔を調整
+      stimulus.style.marginBottom = '120px'; // ボタンと不等号の間隔を調整（例: 40px）
     } else {
       console.warn("Stimulus element (.jspsych-html-button-response-stimulus) not found.");
     }
@@ -192,6 +192,7 @@ const test = {
       buttons.style.display = 'flex';
       buttons.style.justifyContent = 'center';
       buttons.style.marginTop = '10px'; // 上部の間隔を調整
+      buttons.style.gap = '80px'; // ボタン間の間隔を調整
     } else {
       console.warn("Buttons container (.jspsych-html-button-response-button-box) not found.");
     }
